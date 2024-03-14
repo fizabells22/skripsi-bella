@@ -1,0 +1,136 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700");
+
+* {
+  font-family: "Poppins", sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+
+/* MASTER */
+.header {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.header .brand {
+  font-size: 25px;
+  font-weight: bolder;
+  text-decoration: none;
+  margin-top: 13px;
+  color: #2B50A8;
+}
+
+.header .navbar a {
+  font-size: 20px;
+  color: #2B50A8;
+  margin: 10px;
+}
+
+.header .navbar a:hover {
+  color: #2B50A8;
+  text-decoration: none;
+}
+
+.header .icons a i {
+  font-size: 25px;
+  margin-left: 22px;
+  padding: 10px;
+  color: #666;
+  margin-top: 7px;
+}
+
+.header .icons a i:hover {
+  color: #2B50A8;
+}
+
+.header .search-form {
+  margin-top: 10px;
+}
+
+/*------------*/
+
+/* LOGIN PAGE */
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px;
+}
+
+.login .card-login {
+  max-width: auto;
+}
+
+svg {
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.login button {
+  margin-left: 45%;
+}
+
+.login .card{
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+body .login{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* LOGIN PAGE */
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px;
+}
+
+.register .card-login {
+  max-width: auto;
+}
+
+svg {
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.register button {
+  margin-left: 45%;
+}
+
+.register .card{
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+body .register{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
