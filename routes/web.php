@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PagesController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +32,11 @@ Route::middleware(['auth', 'user-access:user'])->group(function () {
 Route::middleware(['auth', 'user-access:admin'])->group(function () {
    
     Route::get('/admin/home', [HomeController::class, 'adminHome'])->name('admin.home');
+    
 });
+
+Route::get('/dashboardracing', [PagesController::class, 'dashboardracing'])->name('dashboardracing');
+Route::get('/dashboardsales', [PagesController::class, 'dashboardsales'])->name('dashboardsales');
+
+Route::get('/report', [ReportController::class, 'report'])->name('report');
+Route::post('/import', [ReportController::class, 'import'])->name('import');
