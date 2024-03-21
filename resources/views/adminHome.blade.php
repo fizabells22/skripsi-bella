@@ -1,11 +1,8 @@
 @extends('layouts.app')
-
 @section('title','Dashboard Racing Doors SKU')
 
-@section('title','Report | Dashboard Sales Performance & Racing Doors SKU')
-
 @section('content')
-<!-- Content Wrapper -->
+        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
             <!-- Main Content -->
@@ -13,15 +10,12 @@
             <div class="overflow-auto" >
                 <div class="content-nav">
                 <div class="d-sm-flex align-items-center justify-content-between mb-3">
-                <h1 class="h3 mb-0 text-gray-800 mt-3 ml-4">Report</h1>
+                <h1 class="h3 mb-0 text-gray-800 mt-3 ml-4">Upload Report</h1>
                 </div>
                 </div>
-
                     </ul>
-
                 </nav>
                 <!-- End of Topbar -->
-
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Content Row -->

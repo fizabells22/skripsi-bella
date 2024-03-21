@@ -6,17 +6,18 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/project-style.css">
     <link rel="icon" href="img/paragon-corp.png">
-    <title>Login Page | Dashboard Sales Performance & Racing Doors SKU</title>
+    <title>Dashboard Sales Performance & Racing Doors SKU | Login Page </title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet'>
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <link rel="stylesheet" href="css/project-style.css">
 </head>
 <body>
 <div id="app">
@@ -68,6 +69,7 @@
                 </div>
             </div>
         </nav>
+
 <div class="login">
         <div class="row">
             <div class="col-md-6 text-center">
