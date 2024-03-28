@@ -30,8 +30,6 @@
  <main>
                     <div class="container-fluid px-4">
                         <h1 class="h3 mb-0 text-gray-800 mt-3 ml-4">Dashboard Racing Doors SKU</h1>
-                        <!-- <div class="card mb-4">
-                        <div class="aspect-ratio-16x9"> -->
                         <div class="container-fluid">
     <div class="row justify-content-center align-items-center h-100">
         <div class="col-md-6">

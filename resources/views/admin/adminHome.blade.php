@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.appadmin')
 @section('title','Dashboard Racing Doors SKU')
 
 @section('content')

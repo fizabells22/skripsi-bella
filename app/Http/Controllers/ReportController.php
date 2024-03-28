@@ -9,7 +9,7 @@ class ReportController extends Controller
 {
     public function report(Request $request)
     {
-        return view('admin.home');
+        return view('admin.reportadmin');
     }
 
     public function import(Request $request)
@@ -36,7 +36,7 @@ class ReportController extends Controller
                     'delivered_nominal_bruto_incppn' => (int)$row[7],
                 ]);
             }
-                return redirect()->route('report');
+                return redirect()->route('reportadmin');
         }   
 }
 
