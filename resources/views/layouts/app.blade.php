@@ -22,27 +22,17 @@
     <link rel="stylesheet" href="css/project-style.css">
     
 </head>
-<body id="page-top">
-<!-- Page Wrapper -->
-<div id="wrapper">
-<!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+<body>
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="index.html">
             <img src="img/paragon-corp.png" alt="Gambar" style="max-width: 100%; height: auto;">
             </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <ul class="navbar-nav ms-auto">
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
@@ -79,68 +69,79 @@
                 </div>
             </div>
         </nav>
-          <!-- Divider -->
-          <hr class="sidebar-divider my-0">
-<!-- Heading -->
-<div class="sidebar-heading">
-  Dashboard
-</div>
-<!-- Nav Item - Dashboard -->
-<li class="nav-item">
-  <a class="nav-link" a href="{{ route('dashboardracing') }}">
-      <i class="fas fa-fw fa-tachometer-alt"></i>
-      <span>Racing Doors SKU</span></a>
-</li>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Dashboard</div>
+                            <a class="nav-link" a href="{{ route('dashboardracing') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Racing Doors SKU
+                            </a>
+                            <a class="nav-link" a href="{{ route('dashboardsales') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Sales Performance
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Upload Report</div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Report
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Lighthouse
+                                    </a>
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Sales Performance
+                                    </a>
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Sales Scoreboard
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="sb-sidenav-menu-heading">Other</div>
+                            <a class="nav-link" href="charts.html">
+                                <div class="sb-nav-link-icon"><i class="fa fa-user-circle"></i></div>
+                                Account
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <!-- <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Static Navigation</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Static Navigation</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <p class="mb-0">
+                                    This page is an example of using static navigation. By removing the
+                                    <code>.sb-nav-fixed</code>
+                                    class from the
+                                    <code>body</code>
+                                    , the top navigation and side navigation will become static on scroll. Scroll down this page to see an example.
+                                </p>
+                            </div>
+                        </div>
+                    </div> -->
+                    @yield('content')
+                <!-- </main>   -->
+            </div>
+        </div>
 
-<!-- Nav Item - Dashboard -->
-<li class="nav-item">
-  <a class="nav-link" a href="{{ route('dashboardsales') }}">
-      <i class="fa fa-shopping-cart"></i>
-      <span>Sales Performance</span></a>
-</li>
-<!-- Divider -->
-<hr class="sidebar-divider">
-
-<!-- Heading -->
-<div class="sidebar-heading">
- Report Chart
-</div>
-
- <!-- Nav Item - Dashboard -->
- <li class="nav-item">
-  <i class="fa fa-file"></i>
-      <span>Lighthouse</span></a>
-</li>
-<li class="nav-item">
-  <i class="fa fa-file"></i>
-      <span>Sales Scoreboard</span></a>
-</li>
-<li class="nav-item">
-  <i class="fa fa-file"></i>
-      <span>Sales Achievement</span></a>
-</li>
-
-          <!-- Divider -->
-          <hr class="sidebar-divider">
-<!-- Heading -->
-<div class="sidebar-heading">
-  Others
-</div>
-
- <!-- Nav Item - Dashboard -->
- <li class="nav-item">
-  <i class="fa fa-user-circle"></i>
-      <span>Account</span></a>
-</li>
-
-<!-- Divider -->
-<hr class="sidebar-divider d-none d-md-block">
-</ul>
 <!-- End of Sidebar -->
-        @yield('content')
-    {{-- <script src="/js/jquery-3.6.1.slim.min.js"></script>
+ 
+    <script src="/js/jquery-3.6.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="/js/popper.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script> --}}
+    <script src="/js/bootstrap.min.js"></script>
     <!-- plugin js -->
     <script src="assets/vendor/dropzone/min/dropzone.min.js"></script>
     <!-- init js -->
