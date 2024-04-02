@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('reports', function (Blueprint $table) {
+            $table->id('report_id');
             $table->string('bulan');
             $table->string('customer_id');
             $table->string('customer');
@@ -21,8 +22,8 @@ return new class extends Migration
             $table->string('brand');
             $table->string('product_status_lifecycle');
             $table->string('product');
-            $table->integer('delivered_nominal_bruto_incppn');
-            $table->timestamps=false;		
+            $table->double('delivered_nominal_bruto_incppn');	
+            $table->timestamps();
         });
     }
 

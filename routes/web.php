@@ -53,9 +53,9 @@ Route::get('/salesscoreadmin', function () {
     return view('admin.salesscoreadmin');
 });
 
-Route::post('/reportadmin', [ReportController::class, 'report'])->name('report');
-Route::post('/salesachadmin', [SalesAchievementReportController::class, 'salesachadmin'])->name('salesachadmin');
-Route::post('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
+Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
+Route::get('/salesachadmin', [SalesAchievementReportController::class, 'salesachadmin'])->name('salesachadmin');
+Route::get('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
 
 Route::post('/import', [ReportController::class, 'import'])->name('import');
 Route::get('/import', function (){

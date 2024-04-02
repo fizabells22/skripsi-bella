@@ -4,7 +4,7 @@
 @section('content')
     <main>
                     <div class="container-fluid px-4">
-                        <h1 class="h3 mb-0 text-gray-800 mt-3 ml-4">Report Lighthouse</h1>
+                        <h1 class="h3 mb-0 mt-3 ml-4" style="color: #5A6ACF">Report Lighthouse</h1>
                         <div class="container-fluid">
                     <!-- Content Row -->
                     <br>

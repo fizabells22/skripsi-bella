@@ -20,7 +20,6 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/project-style.css">
-    
 </head>
 <body>
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">

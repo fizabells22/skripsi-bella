@@ -91,13 +91,13 @@
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <a class="nav-link" a href="{{ route('reportadmin') }}">
+                                <a class="nav-link" a href="{{ route('reportadmin') }}">
                                         Lighthouse
                                     </a>
-                                    <a class="nav-link" a href="{{ route('salesachadmin') }}" >
+                                    <a class="nav-link" a href="{{ route('salesachadmin') }}">
                                         Sales Achievement
                                     </a>
-                                    <a class="nav-link" a href="{{ route('salesscoreadmin') }}" >
+                                    <a class="nav-link" a href="{{ route('salesscoreadmin') }}">
                                         Sales Scoreboard
                                     </a>
                                 </nav>
