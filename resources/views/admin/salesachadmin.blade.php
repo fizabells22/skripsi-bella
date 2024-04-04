@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main-layout')
 @section('title','Report | Dashboard Sales Performance & Racing Doors SKU')
 
 @section('content')

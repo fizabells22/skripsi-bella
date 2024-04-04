@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main-layout-user')
 
 @section('content')
 <div id="layoutSidenav_content">
