@@ -8,6 +8,7 @@ use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SalesAchievementReportController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,7 @@ Route::middleware(['auth', 'user-access:user'])->group(function () {
 //Admin Routes List
 Route::middleware(['auth', 'user-access:admin'])->group(function () {
    
-    Route::get('/admin/home', [HomeController::class, 'adminHome'])->name('admin.home');
+    Route::get('/admin/home', [HomeController::class, 'adminHome'])->name('admin.adminHome');
     
 });
 
@@ -61,22 +62,9 @@ Route::get('/salesscoreadmin', function () {
     return view('admin.salesscoreadmin');
 });
 
-Route::get('/report', function () {
-    return view('report');
-});
-
-Route::get('/salesach', function () {
-    return view('salesach');
-});
-
-Route::get('/salesscore', function () {
-    return view('salesscore');
-});
-
-
 Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
-Route::get('/salesachadmin', [SalesAchievementReportController::class, 'salesachadmin'])->name('salesachadmin');
-Route::get('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
+Route::post('/salesachadmin', [SalesAchievementReportController::class, 'salesachadmin'])->name('salesachadmin');
+Route::post('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
 
 Route::post('/import', [ReportController::class, 'import'])->name('import');
 Route::get('/import', function (){
@@ -95,11 +83,14 @@ Route::get('download/template', [DownloadController::class, 'downloadTemplate'])
 Route::get('download/template2', [DownloadController::class, 'downloadTemplate2'])->name('download.template2');
 Route::get('download/template3', [DownloadController::class, 'downloadTemplate3'])->name('download.template3');
 
-Route::get('/coba', function () {
-    return view('admin.adminHome');
+Route::get('/reportadmin', [ChartController::class, 'tampilkanChart']);
+Route::get('/salesachadminn', [ChartController::class, 'tampilkanChartAch']);
+Route::get('/salesscoreadminn', [ChartController::class, 'tampilkanChartScore']);
+
+Route::get('/ubahpass', function () {
+    return view('auth.passwords.ubahpassword');
 });
 
-Route::get('/reportchartadmin', [ChartController::class, 'tampilkanChart']);
-Route::get('/report', [ChartController::class, 'tampilkanReportUser']);
-Route::get('/salesach', [ChartController::class, 'tampilkanAchUser']);
-Route::get('/salesscore', [ChartController::class, 'tampilkanScoreUser']);
+Route::get('/ubahpass', [HomeController::class, 'ubahpass'])->name('auth.passwords.ubahpassword');  
+Route::get('/profile', [UserController::class, 'showProfileUser'])->name('profile');
+Route::get('/profileadmin', [UserController::class, 'showProfileAdmin'])->name('profileadmin');

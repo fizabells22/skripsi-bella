@@ -24,7 +24,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-           <img src="img/paragon-corp.png" alt="Gambar" style="max-width: 100%; height: auto;">
+           <img src="img/paragon-corp.png" style="max-width: 100%; height: auto;">
             </a>
 
             <!-- Divider -->
@@ -84,7 +84,7 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link" a href="{{ route('dashboardracing') }}">
+                <a class="nav-link" a href="{{ route('profile') }}">
                     <i class="fa fa-user-circle"></i>
                     <span>Account</span></a>
             </li>

@@ -84,7 +84,7 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link" a href="{{ route('dashboardracing') }}">
+                <a class="nav-link" a href="{{ route('profileadmin') }}">
                     <i class="fa fa-user-circle"></i>
                     <span>Account</span></a>
             </li>

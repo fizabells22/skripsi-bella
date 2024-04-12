@@ -44,6 +44,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $visible = ['password'];
     /**
      * Interact with the user's first name.
      *
@@ -57,4 +58,14 @@ class User extends Authenticatable
             get: fn ($value) => ["user","admin"][$value],
         );
     }
+
+    // // public function getAuthPassword()
+    // // {
+    // //     return $this->password;
+    // // }
+
+    // public function getUnhashedPassword()
+    // {
+    //     return $this->attributes['password'];
+    // }
 }

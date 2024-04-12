@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/project-style.css">
     <link rel="icon" href="img/paragon-corp.png">
-    <title>Dashboard Sales Performance & Racing Doors SKU | Login Page </title>
+    <title>Login Page | Dashboard Sales Performance & Racing Doors SKU</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">

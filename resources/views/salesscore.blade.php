@@ -23,38 +23,7 @@
                                     <div class="chart-area">
                                         <canvas id="myAreaChart"></canvas>
                                     </div>
-                                    <script>
-        // Data untuk chart (nama produk dan nominal)
-        var namaProduk = {!! json_encode($namaProduk) !!};
-        var nominal = {!! json_encode($nominal) !!};
-
-        // Inisialisasi chart
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: namaProduk,
-                datasets: [{
-                    label: 'Nominal',
-                    data: nominal,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-
-</script>
-                                </div>
+                                                                </div>
                             </div>
                         </div>
 

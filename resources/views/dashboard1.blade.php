@@ -31,7 +31,7 @@
                         <!-- DataTales Example -->
                         <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h4 class="m-0 font-weight-bold text-primary">Racing Doors SKU</h4>
+                            <h4 class="m-0 font-weight-bold text-primary">Dashboard Racing Doors SKU</h4>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
