@@ -3,12 +3,11 @@
 
 @section('content')
 <body>
-<div class="container mt-5">
+    <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header m-0 font-weight-bold text-primary">
-                        User Profile
+                <div class="card w-100">
+                    <div class="card-header m-0 font-weight-bold text-primary text-center">
+                        USER PROFILE
                     </div>
                     <div class="card-body">
                         <div class="form-group">

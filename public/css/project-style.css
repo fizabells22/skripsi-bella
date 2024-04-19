@@ -60,7 +60,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 80px;
+  padding-left: 80px;
+  padding-right: 80px;
+  padding-right: 80px;
+  padding-top: 0%;
 }
 
 .login .card-login {
@@ -82,7 +85,7 @@ svg {
 }
 
 footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
 }
@@ -95,12 +98,22 @@ body .login{
   margin: 0;
 }
 
-/* LOGIN PAGE */
+/* REGISTER PAGE */
 .register {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 80px;
+  margin-top: 20px; /* Memberikan jarak 20 piksel dari atas */
+  margin-left: 5vw; /* Padding responsif menggunakan unit vw */
+  margin-right: 5vw; /* Padding responsif menggunakan unit vw */
+  overflow-y: auto;
+  max-height: 80vh; /* Maksimum tinggi card agar tidak melebihi tinggi layar */
+}
+
+@media screen and (max-width: 768px) {
+  .register {
+      flex-direction: column; /* Mengubah orientasi flex saat lebar layar lebih kecil dari 768px */
+  }
 }
 
 .register .card-login {
@@ -119,12 +132,10 @@ svg {
 .register .card{
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-footer {
-  position:fixed;
-  bottom: 0;
   width: 100%;
+  max-width: 600px;
+  margin-top: 250px;
+  margin-bottom: 0%;
 }
 
 body .register{
@@ -133,4 +144,17 @@ body .register{
   align-items: center;
   height: 100vh;
   margin: 0;
+}
+
+.daftar a:hover, .masuk a:hover, .register a:hover{
+  color: black;
+}
+
+.max-height-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.max-height-card, .card {
+  overflow-y: auto;
 }

@@ -26,18 +26,18 @@ class SalesReportController extends Controller
                 'dc' => $row[0],
                 'sales_name' => $row[1],
                 'sales_category' => $row[2],
-                '%_absensi' => (double)$row[3],
+                'persen_absensi' => (double)$row[3],
                 'target_coverage' => (double)$row[4],
                 'actual_coverage' => (double)$row[5],
-                'act/tar_coverage_%' => (double)$row[6],
+                'act_tar_coverage_persen' => (double)$row[6],
                 'jumlah_rao' => (double)$row[7],
-                '%_rao' => (double)$row[8],
+                'persen_rao' => (double)$row[8],
                 'plan_call' => (double)$row[9],
                 'actual_call' => (double)$row[10],
-                'act/plan_call_%' => (double)$row[11],
+                'act_plan_call_persen' => (double)$row[11],
                 'target_ecall' => (double)$row[12],
                 'actual_ecall' => (double)$row[13],
-                'act/plan_ecall_%' => (double)$row[14],
+                'act_plan_ecall_persen' => (double)$row[14],
             ]);
         }
             return redirect()->route('salesscoreadmin');

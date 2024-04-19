@@ -18,18 +18,18 @@ return new class extends Migration
             $table->string('dc');
             $table->string('sales_name');
             $table->string('sales_category');
-            $table->double('%_absensi');
+            $table->double('persen_absensi');
             $table->double('target_coverage');
             $table->double('actual_coverage');
-            $table->double('act/tar_coverage_%');
+            $table->double('act_tar_coverage_persen');
             $table->double('jumlah_rao');
-            $table->double('%_rao');
+            $table->double('persen_rao');
             $table->double('plan_call');
             $table->double('actual_call');
-            $table->double('act/plan_call_%');
+            $table->double('act_plan_call_persen');
             $table->double('target_ecall');
             $table->double('actual_ecall');
-            $table->double('act/plan_ecall_%');
+            $table->double('act_plan_ecall_persen');
             $table->timestamps();		
         });
     }

@@ -86,11 +86,6 @@ Route::get('download/template3', [DownloadController::class, 'downloadTemplate3'
 Route::get('/reportadmin', [ChartController::class, 'tampilkanChart']);
 Route::get('/salesachadminn', [ChartController::class, 'tampilkanChartAch']);
 Route::get('/salesscoreadminn', [ChartController::class, 'tampilkanChartScore']);
-
-Route::get('/ubahpass', function () {
-    return view('auth.passwords.ubahpassword');
-});
-
-Route::get('/ubahpass', [HomeController::class, 'ubahpass'])->name('auth.passwords.ubahpassword');  
+ 
 Route::get('/profile', [UserController::class, 'showProfileUser'])->name('profile');
 Route::get('/profileadmin', [UserController::class, 'showProfileAdmin'])->name('profileadmin');

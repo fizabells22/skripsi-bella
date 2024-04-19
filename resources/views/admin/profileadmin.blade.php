@@ -5,7 +5,6 @@
 <body>
 <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
                 <div class="card">
                     <div class="card-header m-0 font-weight-bold text-primary">
                         User Profile

@@ -19,67 +19,20 @@
     <link rel="stylesheet" href="css/project-style.css">
 </head>
 <body>
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </nav>
 <div class="register">
         <div class="row">
             <div class="col-md-6 text-center">
+            <div class="regis-card">
                 <img src="img/paragon-corp.png" alt="Gambar" style="width: 400px; height: auto; margin-right: 60px;">
             </div>
+            </div>
         </div>
-        <div class="col-md-6">
+        <div class="max-height-card col-md-6" style="margin-bottom:60px">
             <div class="card">
                 <div class="card-body">
                 <div class="card-body">
-                <h2 class="card-title text-center text-primary" >Register</h2>
-                <h6 class="card-title text-center">Dashboard Sales Performance & Racing Doors SKU</h6>
+                <h2 class="card-title text-center text-primary" style="font-weight: 900;">REGISTER</h2>
+                <h6 class="card-title text-center" style="font-weight: 600;">Dashboard Sales Performance & Racing Doors SKU</h6>
                 <br>
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
@@ -114,17 +67,24 @@
                             <label for="password-confirm" class="form-label">{{ __('Confirm Password') }}</label>
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
-                       <div class="mb-0">
-                                <button type="submit" class="btn btn-primary btn-block">
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-block btn-primary" style="width: 100%; margin-left: 0px">
                                     {{ __('Register') }}
                                 </button>
                             </div>
+                            @if (Route::has('password.request'))
+                    <div class="text-center">
+                                    <a class="btn btn-link" style="text-decoration:none; font-size:15px;" href="{{ route('login') }}"> Already have an account?
+                                        {{ __('Login!') }}
+                                    </a>
+                                @endif
+                </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-<footer class="py-4 text-white mt-4" style="background-color: #2B50A8" margin-top="auto">
+<footer class="py-4 text-white" style="background-color: #2B50A8">
         <div class="container text-center">PT Paragon Technology and Innovation | Copyright &copy 
         </div>
     </footer>

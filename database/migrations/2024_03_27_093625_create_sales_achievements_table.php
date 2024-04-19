@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id('achievement_id');
             $table->double('target_brand');
             $table->double('ach_brand');
-            $table->double('%_brand');
+            $table->double('persen_brand');
             $table->unsignedBigInteger('sales_id');
             $table->unsignedBigInteger('brand_id');
             $table->foreign('sales_id')->references('sales_id')->on('sales_representatives')->onDelete('cascade');
