@@ -7,6 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/project-style.css">
     <link rel="icon" href="img/paragon-corp.png">
@@ -38,20 +39,20 @@
                         <div class="mb-3 mt-2">
                             <label for="email" class="form-label" style="font-size: 15px;">{{ __('Email Address') }}</label>
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                @if ($errors->has('email'))
+                                <div class="alert alert-danger">
+                                    {{ $errors->first('email') }}
+                                </div>
+                            @endif
                             </div>
                         <div class="mb-3">
                             <label for="password" class="form-label" style="font-size: 15px;">{{ __('Password') }}</label>
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                @if ($errors->has('password'))
+                                <div class="alert alert-danger">
+                                    {{ $errors->first('password') }}
+                                </div>
+                            @endif
                             </div>
                         <div class="mb-3">
                                 <div class="form-check">
@@ -80,7 +81,17 @@
                                     </a>
                                 @endif
                                 </div>
-                                
+                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                <script>
+                                    @if(session('error'))
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Authentication Failed',
+                                            text: '{{ session('error') }}',
+                                            confirmButtonColor: '#2B50A8',
+                                        });
+                                    @endif
+                                </script>
                         </div>
                     </form>
                 </div>
@@ -94,5 +105,6 @@
         <div class="container text-center">PT Paragon Technology and Innovation | Copyright &copy 
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/project-style.css">
     <link rel="icon" href="img/paragon-corp.png">
-    <title>Login Page | Dashboard Sales Performance & Racing Doors SKU</title>
+    <title>Forgot Password Page | Dashboard Sales Performance & Racing Doors SKU</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -21,17 +21,15 @@
 </head>
 <body>
 <div class="login">
-        <div class="row">
-            <div class="col-md-6 text-center">
-                <img src="img/paragon-corp.png" alt="Gambar" style="width: 400px; height: auto; margin-right: 60px;">
-            </div>
-        </div>
-        <div class="col-md-6" style="margin-bottom:60px" >
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+        <div class="col-md-6">
             <div class="card" >
                 <div class="card-body">
                 <div class="card-body">
-                <h2 class="card-title text-center text-primary" style="font-weight: 900;">Forget Password</h2>
-                <h6 class="card-title text-center" style="font-weight: 600;">Input your email, we will send your reset password link</h6>      
+                <h2 class="card-title text-center text-primary" style="font-weight: 900;">FORGOT PASSWORD</h2>
+                <h6 class="card-title text-center" style="font-weight: 600;">Input your email, we will send your reset password link</h6>
+                <br>
                 <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
@@ -60,13 +58,18 @@
                         </div>
                     </form>
                 </div>
+                </div>
+                </div>
             </div>
         </div>
-    </div>
 </div>
-<footer class="py-4 text-white mt-4" style="background-color: #2B50A8" margin-top="auto">
-        <div class="container text-center">PT Paragon Technology and Innovation | Copyright &copy 
-        </div>
-    </footer>
+</div>
+</div>
+</div>
+<footer class="py-4 text-white mt-4" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #2B50A8;">
+    <div class="container text-center">
+        PT Paragon Technology and Innovation | Copyright &copy;
+    </div>
+</footer>
 </body>
 </html>

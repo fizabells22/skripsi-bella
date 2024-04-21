@@ -61,8 +61,28 @@
                                         </span>
                                     </div>
                                 </div>
+
+                                <!-- <div class="container mt-5">
+        <h1>Sales Data</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sales Name</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($salesData as $sales)
+                <tr>
+                    <td>{{ $sales->saless_name }}</td>
+                    <td>{{ $sales-> saless_category }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </main>  
 @endsection
