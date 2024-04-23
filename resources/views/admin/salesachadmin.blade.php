@@ -36,53 +36,33 @@
                             </div>
                         </div>
 
-                        <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5">
+                         <!-- Sales Table -->
+                         <div class="col-xl-4 col-lg-6">
                             <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Sales Representative</h6>
                                 </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
-                                    </div>
+                                <div class="card-body" style="overflow-y: auto;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales Name</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales Category</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Distribution Center</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($salesRepresentatives as $salesRepresentativess)
+                                            <tr>
+                                                <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesRepresentativess->saless_name }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesRepresentativess->saless_category }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesRepresentativess->distribution_center }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-
-                                <!-- <div class="container mt-5">
-        <h1>Sales Data</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Sales Name</th>
-                    <th>Category</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($salesData as $sales)
-                <tr>
-                    <td>{{ $sales->saless_name }}</td>
-                    <td>{{ $sales-> saless_category }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
                             </div>
                         </div>
-                    </div> -->
                 </main>  
 @endsection

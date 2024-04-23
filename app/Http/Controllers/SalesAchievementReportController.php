@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 use App\Models\SalesAchs;
+use App\Models\SalesRepresentative;
 use Illuminate\Http\Request;
 
 class SalesAchievementReportController extends Controller
 {
-        public function salesach(Request $request){
-            return view('admin.salesachadmin');
-        }
         public function importsalesach(Request $request)
         {
             $request->validate([
@@ -69,4 +67,25 @@ class SalesAchievementReportController extends Controller
             }
                 return redirect()->route('salesachadmin');
         }   
+
+        public function tabelsalesrepre()
+    {
+        $salesRepresentatives = SalesRepresentative::select('saless_name', 'saless_category','distribution_center')->get();
+        $namaSales = [];
+        $categorySales = [];
+        $distributionCenter = [];
+
+        // Mengisi array dengan data yang diperoleh dari query
+        foreach ($salesRepresentatives as $salesRepresentativess) {
+            $namaSales[] = $salesRepresentativess->saless_name;
+            $categorySales[] = $salesRepresentativess->saless_category;
+            $distributionCenter[] = $salesRepresentativess->distribution_center;
+        }
+        return view('admin.salesachadmin')->with('salesRepresentatives', $salesRepresentatives);
+    }
+
+    public function salesach(Request $request){
+        $salesRepresentatives = SalesRepresentative::select('saless_name', 'saless_category','distribution_center')->get();
+        return view('admin.salesachadmin')->with('salesRepresentatives', $salesRepresentatives);
+    }
     }

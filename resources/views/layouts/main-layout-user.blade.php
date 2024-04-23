@@ -23,8 +23,8 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-           <img src="img/paragon-corp.png" style="max-width: 100%; height: auto;">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" a href="{{ route('home') }}">
+           <img src="img/paragon-corp.png" alt="Gambar" style="max-width: 100%; height: auto;">
             </a>
 
             <!-- Divider -->

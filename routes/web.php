@@ -9,6 +9,7 @@ use App\Http\Controllers\SalesAchievementReportController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TablesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +48,7 @@ Route::get('/dashboardracingadmin', [PagesController::class, 'dashboardracingadm
 Route::get('/dashboardsalesadmin', [PagesController::class, 'dashboardsalesadmin'])->name('dashboardsalesadmin');
 
 Route::get('/report', [PagesController::class, 'report'])->name('report');
-Route::get('/salesach', [PagesController::class, 'salesach'])->name('salesach');
+Route::get('/salesach', [TablesController::class, 'tabelsalesrepre'])->name('salesach');
 Route::get('/salesscore', [PagesController::class, 'salesscore'])->name('salesscore');
 
 Route::get('/reportadmin', function () {
@@ -63,7 +64,7 @@ Route::get('/salesscoreadmin', function () {
 });
 
 Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
-Route::post('/salesachadmin', [SalesAchievementReportController::class, 'salesachadmin'])->name('salesachadmin');
+Route::get('/salesachadmin', [SalesAchievementReportController::class, 'salesach'])->name('salesachadmin');
 Route::post('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
 
 Route::post('/import', [ReportController::class, 'import'])->name('import');
