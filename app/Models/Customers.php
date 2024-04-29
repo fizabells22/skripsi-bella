@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SalesRepresentative extends Model
+class Customers extends Model
 {
     use HasFactory;
-    protected $table = 'sales_representatives';
+    protected $table = 'customers';
 
     public function reeports() {
-        return $this->hasMany(Reeports::class, 'sales_id');
+        return $this->hasMany(Reeports::class, 'customers_kd');
     }
 }

@@ -14,11 +14,15 @@
                         <div class="mb-3">
                             <form action="{{route ('importsalesach')}}" method="POST" enctype="multipart/form-data">
       @csrf
+      <div class="import-kotak" style="display: flex;justify-content: center;align-items: center;text-align: center;">
       <div class="form-group">
-        <label for="fileInput">Choose File</label>
-        <input type="file" class="form-control-file" name="csvfile">
+        <img src="img/feather_upload.png" alt="">
+        <h1 style="color: #0F91D2; font-weight: 900">Select a file or drag and drop here</h1>
+        <!-- <p style="font-weight: 700">csv file size no more than 10MB</p> -->
+        <input type="file" class="form-control-file" name="csvfile" style="margin-left: 30%;">
       </div>
-      <button type="submit" class="btn btn-primary btn-block">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top: 30px;">
       Upload</button>
     </form>
     </div>

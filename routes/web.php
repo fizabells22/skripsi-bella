@@ -10,6 +10,8 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TablesController;
+use App\Http\Controllers\MasterDataAdminController;
+use App\Http\Controllers\MasterDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +64,9 @@ Route::get('/salesachadmin', function () {
 Route::get('/salesscoreadmin', function () {
     return view('admin.salesscoreadmin');
 });
+
+Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index']);
+Route::get('/masterdata', [MasterDataController::class, 'indexuser'])->name('masterdata');
 
 Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
 Route::get('/salesachadmin', [SalesAchievementReportController::class, 'salesach'])->name('salesachadmin');

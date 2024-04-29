@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('reeports', function (Blueprint $table) {
             $table->id('reports_id');
-            $table->date('bulan_report');
+            $table->string('bulan_report');
             $table->double('delivered_nominal_bruto_incppns');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('sales_id');

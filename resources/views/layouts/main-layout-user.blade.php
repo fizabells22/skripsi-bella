@@ -73,6 +73,21 @@
                         <a class="collapse-item" a href="{{ route('salesach') }}">Sales Achievement</a>
                         <a class="collapse-item" a href="{{ route('salesscore') }}">Sales Scoreboard</a>
             </li>
+            
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Master Data
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link" a href="{{ route('masterdata') }}">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Master Data</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
