@@ -107,7 +107,7 @@
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Product</h6>
                                 </div>
-                                <div class="card-body" style="overflow-y: auto;">
+                                <div class="card-body custom-card-body">
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
@@ -138,7 +138,7 @@
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Report Lighthouse</h6>
                                 </div>
-                                <div class="card-body" style="overflow-y: auto;">
+                                <div class="card-body custom-card-body">
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
@@ -175,7 +175,7 @@
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Sales Achievement</h6>
                                 </div>
-                                <div class="card-body" style="overflow-y: auto;">
+                                <div class="card-body custom-card-body">
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
@@ -210,7 +210,7 @@
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Sales Scoreboard</h6>
                                 </div>
-                                <div class="card-body" style="overflow-y: auto;">
+                                <div class="card-body custom-card-body">
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>

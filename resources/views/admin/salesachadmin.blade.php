@@ -3,6 +3,12 @@
 
 @section('content')
     <main>
+    <style>
+    .custom-card-body {
+        max-height: 360px;
+        overflow-y: auto;
+    }
+    </style>
                     <h2 class="m-0 font-weight-bold text-primary">Report Sales Achievement</h2>
                     <div class="container-fluid">
                     <!-- Content Row -->
@@ -38,12 +44,12 @@
 
                          <!-- Sales Table -->
                          <div class="col-xl-4 col-lg-6">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 custom-card">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Sales Representative</h6>
                                 </div>
-                                <div class="card-body" style="overflow-y: auto;">
-                                    <table>
+                                <div class="card-body custom-card-body">
+                                    <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
                                                 <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales Name</th>

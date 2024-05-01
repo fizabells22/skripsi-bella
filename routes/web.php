@@ -65,7 +65,7 @@ Route::get('/salesscoreadmin', function () {
     return view('admin.salesscoreadmin');
 });
 
-Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index']);
+Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index'])->name('masterdataadmin');
 Route::get('/masterdata', [MasterDataController::class, 'indexuser'])->name('masterdata');
 
 Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
