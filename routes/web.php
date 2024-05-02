@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\MasterDataAdminController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\SalesAchChartsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,7 +70,7 @@ Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index'])->nam
 Route::get('/masterdata', [MasterDataController::class, 'indexuser'])->name('masterdata');
 
 Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
-Route::get('/salesachadmin', [SalesAchievementReportController::class, 'salesach'])->name('salesachadmin');
+Route::get('/salesachadmin', [SalesAchChartsController::class, 'charts'])->name('salesachadmin');
 Route::post('/salesscoreadmin', [SalesReportController::class, 'salesscoreadmin'])->name('salesscoreadmin');
 
 Route::post('/import', [ReportController::class, 'import'])->name('import');

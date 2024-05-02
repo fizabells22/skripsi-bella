@@ -18,7 +18,7 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <link rel="stylesheet" href="css/project-style.css">
+    <link rel="stylesheet" href="/css/project-style.css">
 </head>
 <body>
 <div id="app">

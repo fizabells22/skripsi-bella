@@ -9,8 +9,10 @@ class SalesRepresentative extends Model
 {
     use HasFactory;
     protected $table = 'sales_representatives';
+    protected $primaryKey = 'sales_id';
 
-    public function reeports() {
-        return $this->hasMany(Reeports::class, 'sales_id');
+    public function salesAchievements()
+    {
+        return $this->hasMany(SalesAchievements::class, 'sales_id');
     }
 }

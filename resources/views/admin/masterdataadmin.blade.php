@@ -9,6 +9,33 @@
         overflow-y: auto;
     }
     </style>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+    // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
+    $('th[data-sortable]').click(function(){
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        this.asc = !this.asc
+        if (!this.asc){
+            rows = rows.reverse()
+            $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down')
+        } else {
+            $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up')
+        }
+        for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+    })
+    // Fungsi untuk membandingkan nilai
+    function comparer(index) {
+        return function(a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    // Fungsi untuk mendapatkan nilai sel
+    function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+})
+</script>
                     <h2 class="m-0 font-weight-bold text-primary">Master Data</h2>
                     <div class="container-fluid">
                     <!-- Content Row -->
@@ -26,9 +53,18 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Customer KD</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Customer ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Customer Name</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Customer KD
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer Name
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -55,9 +91,18 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales Name</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales Category</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Distribution Center</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Category
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Distribution Center
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -84,8 +129,14 @@
                                 <table style="width: 100%; height: 100%">
                                     <thead>
                                         <tr>
-                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6; padding: 10px;">Brand ID</th>
-                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6; padding: 10px;">Brand Name</th>
+                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6; padding: 10px;" data-sortable>Brand ID
+                                            <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6; padding: 10px;"data-sortable>Brand Name
+                                            <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -111,10 +162,22 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Product ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Product Name</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Product Status Lifecycle</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Brand ID</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product Name
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product Status Lifecycle
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -142,13 +205,34 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Report ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Bulan Report</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Delivered Nominal Bruto Incppns</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Product ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Customer ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Brand ID</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Report ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Bulan Report
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Delivered Nominal Bruto Incppns
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -179,12 +263,30 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Achievement ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Target Brand</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Achievement Brand</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% Brand</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Brand ID</th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement Brand
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% Brand
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -214,20 +316,62 @@
                                     <table style="width: 100%; height: 100%">
                                         <thead>
                                             <tr>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Scoreboard ID</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% Absensi</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Target Coverage</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Actual Coverage</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% Ach/Tar Coverage</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Jumlah RAO</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% RAO</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Plan Call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Actual Call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% Act/Plan Call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Target E-Call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Actual E-Call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">% Act Plan/ E-call</th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Sales ID</th>    
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Scoreboard ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% Absensi
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Coverage
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Actual Coverage
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% Ach/Tar Coverage
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Jumlah RAO
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% RAO
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Plan Call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Actual Call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% Act/Plan Call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target E-Call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Actual E-Call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>% Act Plan/ E-call
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>    
 
                                             </tr>
                                         </thead>

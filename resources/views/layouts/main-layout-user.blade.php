@@ -68,7 +68,7 @@
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Upload Report:</h6>
+                        <h6 class="collapse-header">Report:</h6>
                         <a class="collapse-item" a href="{{ route('report') }}">Lighthouse</a>
                         <a class="collapse-item" a href="{{ route('salesach') }}">Sales Achievement</a>
                         <a class="collapse-item" a href="{{ route('salesscore') }}">Sales Scoreboard</a>
