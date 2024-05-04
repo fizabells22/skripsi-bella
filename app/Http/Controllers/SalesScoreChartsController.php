@@ -26,7 +26,7 @@ class SalesScoreChartsController extends Controller
             $totalActualCall += $scoreboard->actual_calls;
             $totalPlanCall += $scoreboard->plan_calls;
             $totalECall += $scoreboard->actual_ecalls;
-    
+
             $dataScore[] = [
                 'sales_name' => $salesRep->saless_name,
                 'jumlah_rao' => $scoreboard->jumlahh_rao,
@@ -40,7 +40,6 @@ class SalesScoreChartsController extends Controller
                 'totalECall' => $totalECall,
             ];
         }
-    
         return view('admin.salesscoreadmin')->with('dataScore', $dataScore);
     }
 }

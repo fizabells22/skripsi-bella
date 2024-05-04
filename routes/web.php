@@ -14,6 +14,7 @@ use App\Http\Controllers\MasterDataAdminController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\SalesAchChartsController;
 use App\Http\Controllers\SalesScoreChartsController;
+use App\Http\Controllers\ReportChartsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +71,7 @@ Route::get('/salesscoreadmin', function () {
 Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index'])->name('masterdataadmin');
 Route::get('/masterdata', [MasterDataController::class, 'indexuser'])->name('masterdata');
 
-Route::post('/reportadmin', [ReportController::class, 'reportadmin'])->name('reportadmin');
+Route::post('/reportadmin', [ReportChartController::class, 'reportcharts'])->name('reportadmin');
 Route::get('/salesachadmin', [SalesAchChartsController::class, 'charts'])->name('salesachadmin');
 Route::get('/salesscoreadmin', [SalesScoreChartsController::class, 'chartscore'])->name('salesscoreadmin');
 

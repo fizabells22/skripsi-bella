@@ -29,7 +29,7 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+                                        <canvas id="myAreaChartreport"></canvas>
                                     </div>
                                     <script>
         // Data untuk chart (nama produk dan nominal)
@@ -37,7 +37,7 @@
         var nominal = {!! json_encode($nominal) !!};
 
         // Inisialisasi chart
-        var ctx = document.getElementById('myChart').getContext('2d');
+        var ctx = document.getElementById('myAreaChartreport').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
