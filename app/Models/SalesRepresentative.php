@@ -15,4 +15,9 @@ class SalesRepresentative extends Model
     {
         return $this->hasMany(SalesAchievements::class, 'sales_id');
     }
+
+    public function salesScoreboards()
+    {
+        return $this->hasMany(SalesScoreboards::class, 'sales_id');
+    }
 }

@@ -5,7 +5,7 @@
 <main>
     <style>
         .custom-card-body {
-            max-height: 360px;
+            max-height: 375px;
             overflow-y: auto;
         }
     </style>
@@ -51,24 +51,93 @@
     <div class="row">
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
-                    </div>
-                </div>
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement All Brand</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areaallbrand">
+                <canvas id="myAreaChartallbrand"></canvas>
             </div>
         </div>
+    </div>
+</div>
+
+<script>
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
+    var persenBrand = []; // Array untuk persen brand
+
+    // Assuming dataSales is already defined and structured correctly
+    @foreach($dataSales as $sales)
+        @if($sales["brand_id"] == 56 || $sales["brand_name"] === "ALL BRAND")
+            salesNames.push('{{ $sales["sales_name"] }}');
+            targetBrand.push('{{ $sales["target_brand"] }}');
+            achBrand.push('{{ $sales["ach_brand"] }}');
+            persenBrand.push('{{ $sales["persen_brand"] }}'); // Mengisi data persen brand
+        @endif
+    @endforeach
+
+    var ctx = document.getElementById('myAreaChartallbrand').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar', // Tipe dasar chart
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Brand',
+                data: targetBrand,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Ach Brand',
+                data: achBrand,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Persen Brand',
+                data: persenBrand,
+                type: 'line',
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                yAxisID: 'y-axis-2'
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    id: 'y-axis-1',
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        beginAtZero: true
+                    }
+                },
+                {
+                    id: 'y-axis-2',
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
         <!-- Sales Table -->
         <div class="col-xl-4 col-lg-6">
             <div class="card shadow mb-4 custom-card">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Sales Representative</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Master Data All Brand</h6>
                 </div>
                 <div class="card-body custom-card-body">
                     <table style="width: 100%; height: 100%">
@@ -79,12 +148,17 @@
                                         <i class="fas fa-sort"></i>
                                     </span>
                                 </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Category
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
                                     <span class="sortable-icon">
                                         <i class="fas fa-sort"></i>
                                     </span>
                                 </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Distribution Center
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
+                                    <span class="sortable-icon">
+                                        <i class="fas fa-sort"></i>
+                                    </span>
+                                </th>
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
                                     <span class="sortable-icon">
                                         <i class="fas fa-sort"></i>
                                     </span>
@@ -92,83 +166,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($dataSales as $data)
-                            @if (!$loop->first && $data['sales_name'] === $dataSales[$loop->index - 1]['sales_name'])
-                            @continue
+                    @foreach($dataSales as $data)
+                    @if($data['brand_name'] === "ALL BRAND")
+                    <tr>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                    </tr>
                             @endif
-                            <tr>
-                                <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_category'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['distribution_center'] }}</td>
-                            </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <!-- ACH ALL BRAND -->
-        <div class="container">
-            <h2>Grafik Penjualan</h2>
-            <!-- Tempatkan canvas untuk chart -->
-            <canvas id="myChart" width="50" height="25"></canvas>
-        </div>
-
-        <script>
-            // Data untuk chart (nama sales, target brand, dan ach brand)
-            var salesNames = [];
-            var targetBrand = [];
-            var achBrand = [];
-
-            // Loop untuk mengisi data
-            @foreach($dataSales as $sales)
-                @if($sales["brand_id"] == 56 || $sales["brand_name"] === "ALL BRAND")
-                    salesNames.push('{{ $sales["sales_name"] }}');
-                    targetBrand.push('{{ $sales["target_brand"] }}');
-                    achBrand.push('{{ $sales["ach_brand"] }}');
-                @endif
-            @endforeach
-
-            // Inisialisasi chart
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: salesNames,
-                    datasets: [{
-                        label: 'Target Brand',
-                        data: targetBrand,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Ach Brand',
-                        data: achBrand,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
-        </script>
 
         <!-- ACH WARDAH -->
-        <div class="container">
-            <h2>Grafik Penjualan WARDAH</h2>
-            <!-- Tempatkan canvas untuk chart -->
-            <canvas id="myChartWardah" width="50" height="25"></canvas>
+        <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Achievement Wardah</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-arewardah">
+                    <canvas id="myAreaChartWardah"></canvas>
+                </div>
+            </div>
         </div>
-
+    </div>
         <script>
             // Data untuk chart WARDAH (nama sales, target brand, dan ach brand)
             var salesNamesWardah = [];
@@ -185,7 +213,7 @@
             @endforeach
 
             // Inisialisasi chart WARDAH
-            var ctxWardah = document.getElementById('myChartWardah').getContext('2d');
+            var ctxWardah = document.getElementById("myAreaChartWardah").getContext('2d');
             var myChartWardah = new Chart(ctxWardah, {
                 type: 'bar',
                 data: {
@@ -217,225 +245,261 @@
             });
         </script>
 
-<!-- ACH EMINA -->
-<div class="container">
-    <h2>Grafik Penjualan EMINA</h2>
-    <!-- Tempatkan canvas untuk chart -->
-    <canvas id="myChartEmina" width="50" height="25"></canvas>
-</div>
+            <!-- ACH EMINA -->
+            <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Achievement Emina</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-areaemina">
+                    <canvas id="myAreaChartEmina"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+            <script>
+                // Data untuk chart EMINA (nama sales, target brand, dan ach brand)
+                var salesNamesEmina = [];
+                var targetBrandEmina = [];
+                var achBrandEmina = [];
 
-<script>
-    // Data untuk chart EMINA (nama sales, target brand, dan ach brand)
-    var salesNamesEmina = [];
-    var targetBrandEmina = [];
-    var achBrandEmina = [];
+                // Loop untuk mengisi data EMINA
+                @foreach($dataSales as $sales)
+                    @if($sales["brand_id"] == 45 || $sales["brand_name"] === "EMINA")
+                        salesNamesEmina.push('{{ $sales["sales_name"] }}');
+                        targetBrandEmina.push('{{ $sales["target_brand"] }}');
+                        achBrandEmina.push('{{ $sales["ach_brand"] }}');
+                    @endif
+                @endforeach
 
-    // Loop untuk mengisi data EMINA
-    @foreach($dataSales as $sales)
-        @if($sales["brand_id"] == 45 || $sales["brand_name"] === "EMINA")
-            salesNamesEmina.push('{{ $sales["sales_name"] }}');
-            targetBrandEmina.push('{{ $sales["target_brand"] }}');
-            achBrandEmina.push('{{ $sales["ach_brand"] }}');
-        @endif
-    @endforeach
-
-    // Inisialisasi chart EMINA
-    var ctxEmina = document.getElementById('myChartEmina').getContext('2d');
-    var myChartEmina = new Chart(ctxEmina, {
-        type: 'bar',
-        data: {
-            labels: salesNamesEmina,
-            datasets: [{
-                label: 'Target Brand',
-                data: targetBrandEmina,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            },
-            {
-                label: 'Ach Brand',
-                data: achBrandEmina,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+                // Inisialisasi chart EMINA
+                var ctxEmina = document.getElementById('myAreaChartEmina').getContext('2d');
+                var myChartEmina = new Chart(ctxEmina, {
+                    type: 'bar',
+                    data: {
+                        labels: salesNamesEmina,
+                        datasets: [{
+                            label: 'Target Brand',
+                            data: targetBrandEmina,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ach Brand',
+                            data: achBrandEmina,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
                     }
-                }]
-            }
-        }
-    });
-</script>
+                });
+            </script>
 
-<!-- ACH OMG -->
-<div class="container">
-    <h2>Grafik Penjualan OMG</h2>
-    <!-- Tempatkan canvas untuk chart -->
-    <canvas id="myChartOmg" width="50" height="25"></canvas>
-</div>
+            <!-- ACH MAKEOVER -->
+            <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Achievement Makeover</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-areamo">
+                    <canvas id="myChartMakeover"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+            <script>
+                // Data untuk chart MAKEOVER (nama sales, target brand, dan ach brand)
+                var salesNamesMakeover = [];
+                var targetBrandMakeover = [];
+                var achBrandMakeover = [];
 
-<script>
-    // Data untuk chart OMG (nama sales, target brand, dan ach brand)
-    var salesNamesOmg = [];
-    var targetBrandOmg = [];
-    var achBrandOmg = [];
+                // Loop untuk mengisi data MAKEOVER
+                @foreach($dataSales as $sales)
+                    @if($sales["brand_id"] == 47 || $sales["brand_name"] === "MAKEOVER")
+                        salesNamesMakeover.push('{{ $sales["sales_name"] }}');
+                        targetBrandMakeover.push('{{ $sales["target_brand"] }}');
+                        achBrandMakeover.push('{{ $sales["ach_brand"] }}');
+                    @endif
+                @endforeach
 
-    // Loop untuk mengisi data OMG
-    @foreach($dataSales as $sales)
-        @if($sales["brand_id"] == 46 || $sales["brand_name"] === "OMG")
-            salesNamesOmg.push('{{ $sales["sales_name"] }}');
-            targetBrandOmg.push('{{ $sales["target_brand"] }}');
-            achBrandOmg.push('{{ $sales["ach_brand"] }}');
-        @endif
-    @endforeach
-
-    // Inisialisasi chart OMG
-    var ctxOmg = document.getElementById('myChartOmg').getContext('2d');
-    var myChartOmg = new Chart(ctxOmg, {
-        type: 'bar',
-        data: {
-            labels: salesNamesOmg,
-            datasets: [{
-                label: 'Target Brand',
-                data: targetBrandOmg,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            },
-            {
-                label: 'Ach Brand',
-                data: achBrandOmg,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+                // Inisialisasi chart MAKEOVER
+                var ctxMakeover = document.getElementById('myChartMakeover').getContext('2d');
+                var myChartMakeover = new Chart(ctxMakeover, {
+                    type: 'bar',
+                    data: {
+                        labels: salesNamesMakeover,
+                        datasets: [{
+                            label: 'Target Brand',
+                            data: targetBrandMakeover,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ach Brand',
+                            data: achBrandMakeover,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
                     }
-                }]
-            }
-        }
-    });
-</script>
+                });
+            </script>
 
-<!-- ACH MAKEOVER -->
-<div class="container">
-    <h2>Grafik Penjualan MAKEOVER</h2>
-    <!-- Tempatkan canvas untuk chart -->
-    <canvas id="myChartMakeover" width="50" height="25"></canvas>
-</div>
+            <!-- ACH OMG -->
+            <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Achievement OMG</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-areaomg">
+                    <canvas id="myChartOmg"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
-    // Data untuk chart MAKEOVER (nama sales, target brand, dan ach brand)
-    var salesNamesMakeover = [];
-    var targetBrandMakeover = [];
-    var achBrandMakeover = [];
+            <script>
+                // Data untuk chart OMG (nama sales, target brand, dan ach brand)
+                var salesNamesOmg = [];
+                var targetBrandOmg = [];
+                var achBrandOmg = [];
 
-    // Loop untuk mengisi data MAKEOVER
-    @foreach($dataSales as $sales)
-        @if($sales["brand_id"] == 47 || $sales["brand_name"] === "MAKEOVER")
-            salesNamesMakeover.push('{{ $sales["sales_name"] }}');
-            targetBrandMakeover.push('{{ $sales["target_brand"] }}');
-            achBrandMakeover.push('{{ $sales["ach_brand"] }}');
-        @endif
-    @endforeach
+                // Loop untuk mengisi data OMG
+                @foreach($dataSales as $sales)
+                    @if($sales["brand_id"] == 46 || $sales["brand_name"] === "OMG")
+                        salesNamesOmg.push('{{ $sales["sales_name"] }}');
+                        targetBrandOmg.push('{{ $sales["target_brand"] }}');
+                        achBrandOmg.push('{{ $sales["ach_brand"] }}');
+                    @endif
+                @endforeach
 
-    // Inisialisasi chart MAKEOVER
-    var ctxMakeover = document.getElementById('myChartMakeover').getContext('2d');
-    var myChartMakeover = new Chart(ctxMakeover, {
-        type: 'bar',
-        data: {
-            labels: salesNamesMakeover,
-            datasets: [{
-                label: 'Target Brand',
-                data: targetBrandMakeover,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            },
-            {
-                label: 'Ach Brand',
-                data: achBrandMakeover,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+                // Inisialisasi chart OMG
+                var ctxOmg = document.getElementById('myChartOmg').getContext('2d');
+                var myChartOmg = new Chart(ctxOmg, {
+                    type: 'bar',
+                    data: {
+                        labels: salesNamesOmg,
+                        datasets: [{
+                            label: 'Target Brand',
+                            data: targetBrandOmg,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ach Brand',
+                            data: achBrandOmg,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
                     }
-                }]
-            }
-        }
-    });
-</script>
+                });
+            </script>
 
-<!-- ACH PUTRI -->
-<div class="container">
-    <h2>Grafik Penjualan PUTRI</h2>
-    <!-- Tempatkan canvas untuk chart -->
-    <canvas id="myChartPutri" width="50" height="25"></canvas>
-</div>
 
-<script>
-    // Data untuk chart PUTRI (nama sales, target brand, dan ach brand)
-    var salesNamesPutri = [];
-    var targetBrandPutri = [];
-    var achBrandPutri = [];
 
-    // Loop untuk mengisi data PUTRI
-    @foreach($dataSales as $sales)
-        @if($sales["brand_id"] == 48 || $sales["brand_name"] === "PUTRI")
-            salesNamesPutri.push('{{ $sales["sales_name"] }}');
-            targetBrandPutri.push('{{ $sales["target_brand"] }}');
-            achBrandPutri.push('{{ $sales["ach_brand"] }}');
-        @endif
-    @endforeach
+            <!-- ACH PUTRI -->
+            <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Achievement Putri</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-areaputri">
+                    <canvas id="myChartPutri"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // Inisialisasi chart PUTRI
-    var ctxPutri = document.getElementById('myChartPutri').getContext('2d');
-    var myChartPutri = new Chart(ctxPutri, {
-        type: 'bar',
-        data: {
-            labels: salesNamesPutri,
-            datasets: [{
-                label: 'Target Brand',
-                data: targetBrandPutri,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            },
-            {
-                label: 'Ach Brand',
-                data: achBrandPutri,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+            <script>
+                // Data untuk chart PUTRI (nama sales, target brand, dan ach brand)
+                var salesNamesPutri = [];
+                var targetBrandPutri = [];
+                var achBrandPutri = [];
+
+                // Loop untuk mengisi data PUTRI
+                @foreach($dataSales as $sales)
+                    @if($sales["brand_id"] == 48 || $sales["brand_name"] === "PUTRI")
+                        salesNamesPutri.push('{{ $sales["sales_name"] }}');
+                        targetBrandPutri.push('{{ $sales["target_brand"] }}');
+                        achBrandPutri.push('{{ $sales["ach_brand"] }}');
+                    @endif
+                @endforeach
+
+                // Inisialisasi chart PUTRI
+                var ctxPutri = document.getElementById('myChartPutri').getContext('2d');
+                var myChartPutri = new Chart(ctxPutri, {
+                    type: 'bar',
+                    data: {
+                        labels: salesNamesPutri,
+                        datasets: [{
+                            label: 'Target Brand',
+                            data: targetBrandPutri,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ach Brand',
+                            data: achBrandPutri,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
                     }
-                }]
-            }
-        }
-    });
-</script>
+                });
+            </script>
 
     </main>
 @endsection
