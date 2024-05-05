@@ -35,6 +35,8 @@ class SalesScoreChartsController extends Controller
                 'actual_call' => $scoreboard->actual_calls,
                 'target_ecall' => $scoreboard->target_ecalls,
                 'actual_ecall' => $scoreboard->actual_ecalls,
+                'created_at' => $scoreboard->created_at,
+                'updated_at' => $scoreboard->updated_at,
                 'totalActualCall' => $totalActualCall,
                 'totalPlanCall' => $totalPlanCall,
                 'totalECall' => $totalECall,

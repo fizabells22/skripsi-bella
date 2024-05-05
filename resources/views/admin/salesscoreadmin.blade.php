@@ -79,54 +79,69 @@
         </div>
     </div>
 </div>
-    <script>
-        // Get data from PHP (you may need to modify the data format depending on how you pass it)
-        var data = <?php echo json_encode($dataScore); ?>;
-        
-        // Initialize variables for total plan call, actual call, and ecall
-        var totalPlanCall = 0;
-        var totalActualCall = 0;
-        var totalECall = 0;
+<script>
+    // Get data from PHP (you may need to modify the data format depending on how you pass it)
+    var data = <?php echo json_encode($dataScore); ?>;
+    
+    // Initialize objects to track unique sales names and their corresponding values
+    var uniqueSalesNames = {};
+    var totalPlanCall = {};
+    var totalActualCall = {};
+    var totalECall = {};
 
-        // Calculate total plan call, actual call, and ecall
-        data.forEach(function(item) {
-            totalPlanCall += parseInt(item.totalPlanCall);
-            totalActualCall += parseInt(item.actual_call);
-            totalECall += parseInt(item.actual_ecall);
-        });
+    // Calculate total plan call, actual call, and ecall
+    data.forEach(function(item) {
+        // Check if sales name has been processed
+        if (!uniqueSalesNames.hasOwnProperty(item.sales_name)) {
+            // If not, add it to the uniqueSalesNames object
+            uniqueSalesNames[item.sales_name] = true;
+            // Initialize total values for this sales name
+            totalPlanCall[item.sales_name] = 0;
+            totalActualCall[item.sales_name] = 0;
+            totalECall[item.sales_name] = 0;
+        }
+        // Update the totals for this sales name
+        totalPlanCall[item.sales_name] = parseInt(item.totalPlanCall);
+        totalActualCall[item.sales_name] = parseInt(item.actual_call);
+        totalECall[item.sales_name] = parseInt(item.actual_ecall);
+    });
 
-        // Prepare data for doughnut chart
-        var doughnutData = {
-            labels: ['Total Plan Call', 'Total Actual Call', 'Total E-Call'],
-            datasets: [{
-                data: [totalPlanCall, totalActualCall, totalECall],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                ],
-                borderWidth: 1
-            }]
-        };
+    // Calculate overall totals
+    var overallTotalPlanCall = Object.values(totalPlanCall).reduce((a, b) => a + b, 0);
+    var overallTotalActualCall = Object.values(totalActualCall).reduce((a, b) => a + b, 0);
+    var overallTotalECall = Object.values(totalECall).reduce((a, b) => a + b, 0);
 
-        // Draw doughnut chart
-        var salesChart = new Chart(document.getElementById('salesChart'), {
-            type: 'doughnut',
-            data: doughnutData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                title: {
-                    display: true,
-                    text: 'Total Plan Call, Actual Call, and E-Call'
-                }
+    // Prepare data for doughnut chart
+    var doughnutData = {
+        labels: ['Total Plan Call', 'Total Actual Call', 'Total E-Call'],
+        datasets: [{
+            data: [overallTotalPlanCall, overallTotalActualCall, overallTotalECall],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Draw doughnut chart
+    var salesChart = new Chart(document.getElementById('salesChart'), {
+        type: 'doughnut',
+        data: doughnutData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: 'Total Plan Call, Actual Call, and E-Call'
             }
-        });
-    </script>
-    </div>
+        }
+    });
+</script>
 
     <div class="row">
-        <!-- Plan E-Call VS Actual E-Call Chart -->
+        <!-- Plan Call VS Actual Call Chart -->
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
@@ -142,155 +157,182 @@
             </div>
         </div>
 
-    <script>
-        // Data for the chart (sales names, planned calls, and actual calls)
-        var salesNames = [];
-        var planCall = [];
-        var actualCall = [];
+        <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var planCall = [];
+    var actualCall = [];
+    var targetECall = [];
+    var actualECall = [];
 
-        // Loop to populate data
-        @foreach($dataScore as $score)
-            salesNames.push('{{ $score["sales_name"] }}');
-            planCall.push('{{ $score["plan_call"] }}');
-            actualCall.push('{{ $score["actual_call"] }}');
-        @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-        // Initialize chart in the specified canvas
-        var ctx1 = document.getElementById('myAreaChartScore1').getContext('2d');
-        var myChart1 = new Chart(ctx1, {
-            type: 'bar', // Default type is bar for mixed chart types
-            data: {
-                labels: salesNames,
-                datasets: [{
-                    label: 'Plan Call',
-                    data: planCall,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    type: 'bar' // Bar chart for Plan Calls
-                },
-                {
-                    label: 'Actual Call',
-                    data: actualCall,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    type: 'line', // Line chart for Actual Calls
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataScore as $score)
+        var salesName = '{{ $score["sales_name"] }}';
+        var updatedAt = '{{ $score["updated_at"] }}';
+
+        // Check if the sales name is already in the array and if the current data has a newer updated_at
+        if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+            // Update the latest updated_at for the sales name
+            latestUpdate[salesName] = updatedAt;
+
+            // Update the data arrays
+            var index = salesNames.indexOf(salesName);
+            if (index !== -1) {
+                planCall[index] = parseInt('{{ $score["plan_call"] }}');
+                actualCall[index] = parseInt('{{ $score["actual_call"] }}');
+                targetECall[index] = parseInt('{{ $score["target_ecall"] }}');
+                actualECall[index] = parseInt('{{ $score["actual_ecall"] }}');
+            } else {
+                salesNames.push(salesName);
+                planCall.push(parseInt('{{ $score["plan_call"] }}'));
+                actualCall.push(parseInt('{{ $score["actual_call"] }}'));
+                targetECall.push(parseInt('{{ $score["target_ecall"] }}'));
+                actualECall.push(parseInt('{{ $score["actual_ecall"] }}'));
             }
-        });
+        }
+    @endforeach
 
-        // Data for the chart (sales names, target e-call, and actual e-call)
-        var salesName = [];
-        var targetECall = [];
-        var actualECall = [];
-
-        // Loop to populate data
-        @foreach($dataScore as $score)
-            salesName.push('{{ $score["sales_name"] }}');
-            targetECall.push('{{ $score["target_ecall"] }}');
-            actualECall.push('{{ $score["actual_ecall"] }}');
-        @endforeach
-
-        // Initialize chart
-        var ctx2 = document.getElementById('myAreaChartScore2').getContext('2d');
-        var myChart2 = new Chart(ctx2, {
-            type: 'bar', // Default type is bar for mixed chart types
-            data: {
-                labels: salesName,
-                datasets: [{
-                    label: 'Plan E-Call',
-                    data: targetECall,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)', // Slightly more opacity for better visibility
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    type: 'bar' // Specify bar chart type
-                },
-                {
-                    label: 'Actual E-Call',
-                    data: actualECall,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Maintain transparency for the line chart
-                    borderWidth: 2,
-                    type: 'line', // Specify line chart type
-                    fill: false // No fill for line chart
-                }]
+    // Initialize chart for Plan Call and Actual Call
+    var ctx1 = document.getElementById('myAreaChartScore1').getContext('2d');
+    var myChart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Plan Call',
+                data: planCall,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
             },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
+            {
+                label: 'Actual Call',
+                data: actualCall,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
             }
-        });
-    </script>
+        }
+    });
 
-           <!-- Table Master -->
-           <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>RAO
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Plan Call
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Actual Call
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Effective Call
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($dataScore as $score)
-                            <tr>
-                                <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $score['sales_name'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $score['jumlah_rao'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $score['plan_call'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $score['actual_call'] }}</td>
-                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $score['actual_ecall'] }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    // Initialize chart for Plan E-Call and Actual E-Call
+    var ctx2 = document.getElementById('myAreaChartScore2').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Plan E-Call',
+                data: targetECall,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Actual E-Call',
+                data: actualECall,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+<!-- Table Master -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data</h6>
         </div>
- 
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>RAO
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Plan Call
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Actual Call
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Effective Call
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $salesData = [];
+                    @endphp
+                    @foreach($dataScore as $score)
+                        @if (!isset($salesData[$score['sales_name']]))
+                            @php
+                                $salesData[$score['sales_name']] = [
+                                    'jumlah_rao' => 0,
+                                    'plan_call' => 0,
+                                    'actual_call' => 0,
+                                    'actual_ecall' => 0
+                                ];
+                            @endphp
+                        @endif
+                        @php
+                            // Update sales data with latest values
+                            $salesData[$score['sales_name']]['jumlah_rao'] = $score['jumlah_rao'];
+                            $salesData[$score['sales_name']]['plan_call'] = $score['plan_call'];
+                            $salesData[$score['sales_name']]['actual_call'] = $score['actual_call'];
+                            $salesData[$score['sales_name']]['actual_ecall'] = $score['actual_ecall'];
+                        @endphp
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $sales['jumlah_rao'] }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $sales['plan_call'] }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $sales['actual_call'] }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $sales['actual_ecall'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 </main>
 @endsection

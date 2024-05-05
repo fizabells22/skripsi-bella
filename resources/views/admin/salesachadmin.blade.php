@@ -69,7 +69,7 @@
     var salesNames = [];
     var targetBrand = [];
     var achBrand = [];
-    var persenBrand = []; // Array untuk persen brand
+    var persenBrand = [];
 
     // Assuming dataSales is already defined and structured correctly
     @foreach($dataSales as $sales)
@@ -77,7 +77,7 @@
             salesNames.push('{{ $sales["sales_name"] }}');
             targetBrand.push('{{ $sales["target_brand"] }}');
             achBrand.push('{{ $sales["ach_brand"] }}');
-            persenBrand.push('{{ $sales["persen_brand"] }}'); // Mengisi data persen brand
+            persenBrand.push('{{ $sales["persen_brand"] }}');
         @endif
     @endforeach
 
@@ -133,58 +133,78 @@
     });
 </script>
 
-        <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data All Brand</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
+ <!-- Master Data Table for ALL BRAND -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data ALL BRAND</h6>
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;"data-sortable>Target ALL BRAND
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;width: 50%;"data-sortable>Pencapaian
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;width: 20%;"data-sortable>Achievement
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $salesDataAllBrand = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "ALL BRAND")
+                    @if(!isset($salesDataAllBrand[$data['sales_name']]))
+                    @php
+                    $salesDataAllBrand[$data['sales_name']] = [
+                        'target_all_brand' => 0,
+                        'ach_all_brand' => 0,
+                        'persen_all_brand' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesDataAllBrand[$data['sales_name']]['target_all_brand'] = $data['target_brand'];
+                    $salesDataAllBrand[$data['sales_name']]['ach_all_brand'] = $data['ach_brand'];
+                    $salesDataAllBrand[$data['sales_name']]['persen_all_brand'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesDataAllBrand as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_all_brand'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_all_brand'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_all_brand'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
         <!-- ACH WARDAH -->
         <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
+            <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Achievement Wardah</h6>
@@ -245,54 +265,74 @@
             });
         </script>
 
-        <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Wardah</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
+ <!-- Master Data Table for WARDAH -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Wardah</h6>
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
+                            <span class="sortable-icon">
+                                <i class="fas fa-sort"></i>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $salesDataWardah = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "WARDAH")
+                    @if(!isset($salesDataWardah[$data['sales_name']]))
+                    @php
+                    $salesDataWardah[$data['sales_name']] = [
+                        'target_wardah' => 0,
+                        'ach_wardah' => 0,
+                        'persen_wardah' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesDataWardah[$data['sales_name']]['target_wardah'] = $data['target_brand'];
+                    $salesDataWardah[$data['sales_name']]['ach_wardah'] = $data['ach_brand'];
+                    $salesDataWardah[$data['sales_name']]['persen_wardah'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesDataWardah as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_wardah'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_wardah'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_wardah'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH EMINA -->
             <div class="col-xl-8 col-lg-7">
@@ -390,22 +430,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                        $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "EMINA")
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
-                    </tr>
+                        @if($data['brand_name'] === "EMINA")
+                            @if(!isset($salesData[$data['sales_name']]))
+                                @php
+                                    $salesData[$data['sales_name']] = [
+                                        'target_emina' => 0,
+                                        'ach_emina' => 0,
+                                        'persen_emina' => 0,
+                                    ];
+                                @endphp
                             @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            @php
+                                // Update sales data with latest values
+                                $salesData[$data['sales_name']]['target_emina'] = $data['target_brand'];
+                                $salesData[$data['sales_name']]['ach_emina'] = $data['ach_brand'];
+                                $salesData[$data['sales_name']]['persen_emina'] = $data['persen_brand'];
+                            @endphp
+                        @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_emina'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_emina'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_emina'] * 100, 0, ',', '.') }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-
+    </div>
+</div>
             <!-- ACH MAKEOVER -->
             <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
@@ -502,22 +561,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                        $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "MAKEOVER")
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
-                    </tr>
+                        @if($data['brand_name'] === "MAKEOVER")
+                            @if(!isset($salesData[$data['sales_name']]))
+                                @php
+                                    $salesData[$data['sales_name']] = [
+                                        'target_makeover' => 0,
+                                        'ach_makeover' => 0,
+                                        'persen_makeover' => 0,
+                                    ];
+                                @endphp
                             @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            @php
+                                // Update sales data with latest values
+                                $salesData[$data['sales_name']]['target_makeover'] = $data['target_brand'];
+                                $salesData[$data['sales_name']]['ach_makeover'] = $data['ach_brand'];
+                                $salesData[$data['sales_name']]['persen_makeover'] = $data['persen_brand'];
+                            @endphp
+                        @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_makeover'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_makeover'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_makeover'] * 100, 0, ',', '.') }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-
+    </div>
+</div>
             <!-- ACH OMG -->
             <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
@@ -615,23 +693,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                        $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "OMG")
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
-                    </tr>
+                        @if($data['brand_name'] === "OMG")
+                            @if(!isset($salesData[$data['sales_name']]))
+                                @php
+                                    $salesData[$data['sales_name']] = [
+                                        'target_omg' => 0,
+                                        'ach_omg' => 0,
+                                        'persen_omg' => 0,
+                                    ];
+                                @endphp
                             @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            @php
+                                // Update sales data with latest values
+                                $salesData[$data['sales_name']]['target_omg'] = $data['target_brand'];
+                                $salesData[$data['sales_name']]['ach_omg'] = $data['ach_brand'];
+                                $salesData[$data['sales_name']]['persen_omg'] = $data['persen_brand'];
+                            @endphp
+                        @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_omg'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_omg'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_omg'] * 100, 0, ',', '.') }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-
-
+    </div>
+</div>
 
             <!-- ACH PUTRI -->
             <div class="col-xl-8 col-lg-7">
@@ -730,21 +826,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                        $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "PUTRI")
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
-                    </tr>
+                        @if($data['brand_name'] === "PUTRI")
+                            @if(!isset($salesData[$data['sales_name']]))
+                                @php
+                                    $salesData[$data['sales_name']] = [
+                                        'target_putri' => 0,
+                                        'ach_putri' => 0,
+                                        'persen_putri' => 0,
+                                    ];
+                                @endphp
                             @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            @php
+                                // Update sales data with latest values
+                                $salesData[$data['sales_name']]['target_putri'] = $data['target_brand'];
+                                $salesData[$data['sales_name']]['ach_putri'] = $data['ach_brand'];
+                                $salesData[$data['sales_name']]['persen_putri'] = $data['persen_brand'];
+                            @endphp
+                        @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
+                        <tr>
+                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_putri'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_putri'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_putri'] * 100, 0, ',', '.') }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH KAHF -->
             <div class="col-xl-8 col-lg-7">
@@ -843,21 +959,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "KAHF")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_kahf' => 0,
+                        'ach_kahf' => 0,
+                        'persen_kahf' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_kahf'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_kahf'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_kahf'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_kahf'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_kahf'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_kahf'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH INSTAPERFECT -->
             <div class="col-xl-8 col-lg-7">
@@ -956,21 +1092,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "INSTAPERFECT")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_instaperfect' => 0,
+                        'ach_instaperfect' => 0,
+                        'persen_instaperfect' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_instaperfect'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_instaperfect'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_instaperfect'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_instaperfect'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_instaperfect'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_instaperfect'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH CRYSTALLURE -->
             <div class="col-xl-8 col-lg-7">
@@ -1069,21 +1225,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "CRYSTALLURE")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_crystallure' => 0,
+                        'ach_crystallure' => 0,
+                        'persen_crystallure' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_crystallure'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_crystallure'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_crystallure'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_crystallure'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_crystallure'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_crystallure'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
         <!-- ACH BIODEF -->
         <div class="col-xl-8 col-lg-7">
@@ -1182,21 +1358,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "BIODEF")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_biodef' => 0,
+                        'ach_biodef' => 0,
+                        'persen_biodef' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_biodef'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_biodef'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_biodef'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_biodef'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_biodef'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_biodef'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH WONDERLY -->
             <div class="col-xl-8 col-lg-7">
@@ -1295,21 +1491,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "WONDERLY")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_wonderly' => 0,
+                        'ach_wonderly' => 0,
+                        'persen_wonderly' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_wonderly'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_wonderly'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_wonderly'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_wonderly'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_wonderly'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_wonderly'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
                 <!-- ACH LABORE -->
                 <div class="col-xl-8 col-lg-7">
@@ -1408,21 +1624,41 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "LABORE")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_labore' => 0,
+                        'ach_labore' => 0,
+                        'persen_labore' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_labore'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_labore'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_labore'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_labore'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_labore'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_labore'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
             <!-- ACH TAVI -->
             <div class="col-xl-8 col-lg-7">
@@ -1521,20 +1757,40 @@
                             </tr>
                         </thead>
                         <tbody>
+                        @php
+                    $salesData = [];
+                    @endphp
                     @foreach($dataSales as $data)
                     @if($data['brand_name'] === "TAVI")
+                    @if(!isset($salesData[$data['sales_name']]))
+                    @php
+                    $salesData[$data['sales_name']] = [
+                        'target_tavi' => 0,
+                        'ach_tavi' => 0,
+                        'persen_tavi' => 0,
+                    ];
+                    @endphp
+                    @endif
+                    @php
+                    // Update sales data with latest values
+                    $salesData[$data['sales_name']]['target_tavi'] = $data['target_brand'];
+                    $salesData[$data['sales_name']]['ach_tavi'] = $data['ach_brand'];
+                    $salesData[$data['sales_name']]['persen_tavi'] = $data['persen_brand'];
+                    @endphp
+                    @endif
+                    @endforeach
+                    @foreach($salesData as $salesName => $sales)
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $data['sales_name'] }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['target_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['ach_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($data['persen_brand'] * 100, 0, ',', '.') }}%</td>
+                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_tavi'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_tavi'], 0, ',', '.') }}</td>
+                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_tavi'] * 100, 0, ',', '.') }}%</td>
                     </tr>
-                            @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
     </main>
 @endsection

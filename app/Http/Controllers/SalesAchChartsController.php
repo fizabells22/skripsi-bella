@@ -30,6 +30,8 @@ class SalesAchChartsController extends Controller
                 'ach_brand' => $achievement->ach_brand,
                 'persen_brand' => $achievement->persen_brand,
                 'brand_id' => $achievement->brand_id,
+                'created_at' => $achievement->created_at,
+                'updated_at' => $achievement->updated_at,
                 'brand_name' => $brand->brand_name
             ];
         }

@@ -71,7 +71,8 @@ Route::get('/salesscoreadmin', function () {
 Route::get('/masterdataadmin', [MasterDataAdminController::class, 'index'])->name('masterdataadmin');
 Route::get('/masterdata', [MasterDataController::class, 'indexuser'])->name('masterdata');
 
-Route::post('/reportadmin', [ReportChartController::class, 'reportcharts'])->name('reportadmin');
+Route::post('/reportadmin', [ReportChartsController::class, 'reportcharts'])->name('reportadmin');
+Route::get('/reportadmin', [ReportChartsController::class, 'reportcharts'])->name('reportadmin');
 Route::get('/salesachadmin', [SalesAchChartsController::class, 'charts'])->name('salesachadmin');
 Route::get('/salesscoreadmin', [SalesScoreChartsController::class, 'chartscore'])->name('salesscoreadmin');
 
