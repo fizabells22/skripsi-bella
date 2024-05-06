@@ -16,6 +16,6 @@ class Products extends Model
 
     public function reeports()
     {
-        return $this->hasMany(Reeport::class, 'product_id');
+        return $this->hasMany(Reeports::class, 'product_id');
     }
 }

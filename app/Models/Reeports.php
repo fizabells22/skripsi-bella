@@ -16,7 +16,7 @@ class Reeports extends Model
     }
 
     public function salesRepresentatives() {
-        return $this->belongsTo(SalesRepresentatives::class, 'sales_id');
+        return $this->belongsTo(SalesRepresentative::class, 'sales_id');
     }
 
     public function customers() {

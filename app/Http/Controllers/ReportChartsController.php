@@ -10,6 +10,8 @@ use App\Models\Brands;
 use App\Models\Customers;
 use App\Models\Reeports;
 
+use Carbon\Carbon;
+
 class ReportChartsController extends Controller
 {
     public function reportcharts()
@@ -46,10 +48,26 @@ class ReportChartsController extends Controller
             ];
         })->toArray();
 
-        // Send the formatted data to the view
+        // Fetch sales distribution by month
+        $salesDistributionByMonth = Reeports::select(
+                DB::raw('bulan_report as month'),
+                DB::raw('SUM(delivered_nominal_bruto_incppns) as totalSales')
+            )
+            ->groupBy('month')
+            ->get();
+
+        // Format sales distribution data
+        $formattedSalesDistributionByMonth = [];
+        foreach ($salesDistributionByMonth as $sales) {
+            $monthName = Carbon::create()->month($sales->month)->format('F');
+            $formattedSalesDistributionByMonth[$monthName] = $sales->totalSales;
+        }
+
+        // Send all formatted data to the view
         return view('admin.reportadmin', [
             'formattedTopProductsByDelivered' => $formattedTopProductsByDelivered,
             'formattedTopProductsByCustomerPurchases' => $formattedTopProductsByCustomerPurchases,
+            'formattedSalesDistributionByMonth' => $formattedSalesDistributionByMonth,
         ]);
     }
-}
+};
