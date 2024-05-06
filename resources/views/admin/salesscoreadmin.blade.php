@@ -117,9 +117,9 @@
         datasets: [{
             data: [overallTotalPlanCall, overallTotalActualCall, overallTotalECall],
             backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
+                '#59D5E0',
+                '#FAA300',
+                '#F4538A',
             ],
             borderWidth: 1
         }]
@@ -204,15 +204,15 @@
             datasets: [{
                 label: 'Plan Call',
                 data: planCall,
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: '#59D5E0',
+                borderColor: '#59D5E0',
                 borderWidth: 1
             },
             {
                 label: 'Actual Call',
                 data: actualCall,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: '#FAA300',
+                borderColor: '#FAA300',
                 borderWidth: 2
             }]
         },
@@ -236,15 +236,15 @@
             datasets: [{
                 label: 'Plan E-Call',
                 data: targetECall,
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: '#FEA1A1',
+                borderColor: '#FEA1A1',
                 borderWidth: 1
             },
             {
                 label: 'Actual E-Call',
                 data: actualECall,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: '#F4538A',
+                borderColor: '#F4538A',
                 borderWidth: 2
             }]
         },

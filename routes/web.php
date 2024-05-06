@@ -7,9 +7,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\SalesAchievementReportController;
 use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\ChartController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\TablesController;
 use App\Http\Controllers\MasterDataAdminController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\SalesAchChartsController;
@@ -53,8 +51,8 @@ Route::get('/dashboardracingadmin', [PagesController::class, 'dashboardracingadm
 Route::get('/dashboardsalesadmin', [PagesController::class, 'dashboardsalesadmin'])->name('dashboardsalesadmin');
 
 Route::get('/report', [PagesController::class, 'report'])->name('report');
-Route::get('/salesach', [TablesController::class, 'tabelsalesrepre'])->name('salesach');
-Route::get('/salesscore', [PagesController::class, 'salesscore'])->name('salesscore');
+Route::get('/salesach', [SalesAchChartsController::class, 'chartsuser'])->name('salesach');
+Route::get('/salesscore', [SalesScoreChartsController::class, 'chartscoreuser'])->name('salesscore');
 
 Route::get('/reportadmin', function () {
     return view('admin.reportadmin');
@@ -93,10 +91,6 @@ Route::get('/importsales', function (){
 Route::get('download/template', [DownloadController::class, 'downloadTemplate'])->name('download.template');
 Route::get('download/template2', [DownloadController::class, 'downloadTemplate2'])->name('download.template2');
 Route::get('download/template3', [DownloadController::class, 'downloadTemplate3'])->name('download.template3');
-
-Route::get('/reportadmin', [ChartController::class, 'tampilkanChart']);
-Route::get('/salesachadminn', [ChartController::class, 'tampilkanChartAch']);
-Route::get('/salesscoreadminn', [ChartController::class, 'tampilkanChartScore']);
  
 Route::get('/profile', [UserController::class, 'showProfileUser'])->name('profile');
 Route::get('/profileadmin', [UserController::class, 'showProfileAdmin'])->name('profileadmin');

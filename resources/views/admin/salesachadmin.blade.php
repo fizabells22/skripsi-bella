@@ -64,70 +64,86 @@
         </div>
     </div>
 </div>
-
 <script>
+    // Initialize arrays to store data
     var salesNames = [];
     var targetBrand = [];
     var achBrand = [];
     var persenBrand = [];
 
-    // Assuming dataSales is already defined and structured correctly
+    // Object to track the latest updated_at for each sales name
+    var latestUpdate = {};
+
+    // Loop through the data
     @foreach($dataSales as $sales)
-        @if($sales["brand_id"] == 56 || $sales["brand_name"] === "ALL BRAND")
-            salesNames.push('{{ $sales["sales_name"] }}');
-            targetBrand.push('{{ $sales["target_brand"] }}');
-            achBrand.push('{{ $sales["ach_brand"] }}');
-            persenBrand.push('{{ $sales["persen_brand"] }}');
-        @endif
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Process only 'ALL BRAND'
+        if (brandName === 'ALL BRAND') {
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update data
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}', 10);
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}', 10);
+                    persenBrand[index] = parseFloat('{{ $sales["persen_brand"] }}'); // Assuming this is a float
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}', 10));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}', 10));
+                    persenBrand.push(parseFloat('{{ $sales["persen_brand"] }}')); // Assuming this is a float
+                }
+            }
+        }
     @endforeach
 
     var ctx = document.getElementById('myAreaChartallbrand').getContext('2d');
     var myChart = new Chart(ctx, {
-        type: 'bar', // Tipe dasar chart
+        type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
-                label: 'Target Brand',
+                label: 'Target All Brand',
                 data: targetBrand,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: '#F5DD61',
+                borderColor: '#F5DD61',
                 borderWidth: 1
-            },
-            {
-                label: 'Ach Brand',
+            }, {
+                label: 'Ach All Brand',
                 data: achBrand,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: '#68D2E8',
+                borderColor: '#68D2E8',
                 borderWidth: 1
-            },
-            {
-                label: 'Persen Brand',
+            }, {
+                label: '% Achievement',
                 data: persenBrand,
                 type: 'line',
                 fill: false,
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: '#FAA300',
+                borderColor: '#FAA300',
                 borderWidth: 2,
-                yAxisID: 'y-axis-2'
+                yAxisID: 'y2'
             }]
         },
         options: {
             scales: {
-                yAxes: [{
-                    id: 'y-axis-1',
-                    type: 'linear',
-                    position: 'left',
-                    ticks: {
-                        beginAtZero: true
-                    }
+                y: {
+                    beginAtZero: true
                 },
-                {
-                    id: 'y-axis-2',
+                y2: {
                     type: 'linear',
+                    display: true,
                     position: 'right',
-                    ticks: {
-                        beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
                     }
-                }]
+                }
             }
         }
     });
@@ -211,59 +227,79 @@
             </div>
             <!-- Card Body -->
             <div class="card-body">
-                <div class="chart-arewardah">
+                <div class="chart-areawardah">
                     <canvas id="myAreaChartWardah"></canvas>
                 </div>
             </div>
         </div>
     </div>
-        <script>
-            // Data untuk chart WARDAH (nama sales, target brand, dan ach brand)
-            var salesNamesWardah = [];
-            var targetBrandWardah = [];
-            var achBrandWardah = [];
 
-            // Loop untuk mengisi data WARDAH
-            @foreach($dataSales as $sales)
-                @if($sales["brand_id"] == 44 || $sales["brand_name"] === "WARDAH")
-                    salesNamesWardah.push('{{ $sales["sales_name"] }}');
-                    targetBrandWardah.push('{{ $sales["target_brand"] }}');
-                    achBrandWardah.push('{{ $sales["ach_brand"] }}');
-                @endif
-            @endforeach
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-            // Inisialisasi chart WARDAH
-            var ctxWardah = document.getElementById("myAreaChartWardah").getContext('2d');
-            var myChartWardah = new Chart(ctxWardah, {
-                type: 'bar',
-                data: {
-                    labels: salesNamesWardah,
-                    datasets: [{
-                        label: 'Target Brand',
-                        data: targetBrandWardah,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Ach Brand',
-                        data: achBrandWardah,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
+
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'WARDAH') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
                 }
-            });
-        </script>
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myAreaChartWardah').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Wardah',
+                data: targetBrand,
+                backgroundColor: '#68D2E8',
+                borderColor: '#CAF4FF',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Wardah',
+                data: achBrand,
+                backgroundColor: '#03AED2',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
  <!-- Master Data Table for WARDAH -->
 <div class="col-xl-4 col-lg-6">
@@ -349,53 +385,72 @@
             </div>
         </div>
     </div>
-            <script>
-                // Data untuk chart EMINA (nama sales, target brand, dan ach brand)
-                var salesNamesEmina = [];
-                var targetBrandEmina = [];
-                var achBrandEmina = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data EMINA
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 45 || $sales["brand_name"] === "EMINA")
-                        salesNamesEmina.push('{{ $sales["sales_name"] }}');
-                        targetBrandEmina.push('{{ $sales["target_brand"] }}');
-                        achBrandEmina.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart EMINA
-                var ctxEmina = document.getElementById('myAreaChartEmina').getContext('2d');
-                var myChartEmina = new Chart(ctxEmina, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesEmina,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandEmina,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandEmina,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'EMINA') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myAreaChartEmina').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Emina',
+                data: targetBrand,
+                backgroundColor: '#FF9E9E',
+                borderColor: '#FFCAC8',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Emina',
+                data: achBrand,
+                backgroundColor: '#FF6464',
+                borderColor: '#FF7D7D',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -480,53 +535,72 @@
             </div>
         </div>
     </div>
-            <script>
-                // Data untuk chart MAKEOVER (nama sales, target brand, dan ach brand)
-                var salesNamesMakeover = [];
-                var targetBrandMakeover = [];
-                var achBrandMakeover = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data MAKEOVER
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 47 || $sales["brand_name"] === "MAKEOVER")
-                        salesNamesMakeover.push('{{ $sales["sales_name"] }}');
-                        targetBrandMakeover.push('{{ $sales["target_brand"] }}');
-                        achBrandMakeover.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart MAKEOVER
-                var ctxMakeover = document.getElementById('myChartMakeover').getContext('2d');
-                var myChartMakeover = new Chart(ctxMakeover, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesMakeover,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandMakeover,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandMakeover,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'MAKEOVER') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartMakeover').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target MakeOver',
+                data: targetBrand,
+                backgroundColor: '#FFCACA',
+                borderColor: '#FFCACA',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement MakeOver',
+                data: achBrand,
+                backgroundColor: '#F10086',
+                borderColor: '#F10086',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -612,53 +686,72 @@
         </div>
     </div>
 
-            <script>
-                // Data untuk chart OMG (nama sales, target brand, dan ach brand)
-                var salesNamesOmg = [];
-                var targetBrandOmg = [];
-                var achBrandOmg = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data OMG
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 46 || $sales["brand_name"] === "OMG")
-                        salesNamesOmg.push('{{ $sales["sales_name"] }}');
-                        targetBrandOmg.push('{{ $sales["target_brand"] }}');
-                        achBrandOmg.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart OMG
-                var ctxOmg = document.getElementById('myChartOmg').getContext('2d');
-                var myChartOmg = new Chart(ctxOmg, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesOmg,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandOmg,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandOmg,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'OMG') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartOmg').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target OMG',
+                data: targetBrand,
+                backgroundColor: '#F1AE89',
+                borderColor: '#C75643',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement OMG',
+                data: achBrand,
+                backgroundColor: '#C51605',
+                borderColor: '#DF2E38',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -745,53 +838,72 @@
         </div>
     </div>
 
-            <script>
-                // Data untuk chart PUTRI (nama sales, target brand, dan ach brand)
-                var salesNamesPutri = [];
-                var targetBrandPutri = [];
-                var achBrandPutri = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data PUTRI
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 48 || $sales["brand_name"] === "PUTRI")
-                        salesNamesPutri.push('{{ $sales["sales_name"] }}');
-                        targetBrandPutri.push('{{ $sales["target_brand"] }}');
-                        achBrandPutri.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart PUTRI
-                var ctxPutri = document.getElementById('myChartPutri').getContext('2d');
-                var myChartPutri = new Chart(ctxPutri, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesPutri,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandPutri,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandPutri,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'PUTRI') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartPutri').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Putri',
+                data: targetBrand,
+                backgroundColor: '#FF7A00',
+                borderColor: '#FFEFCF',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Putri',
+                data: achBrand,
+                backgroundColor: '#D44000',
+                borderColor: '#FFEFCF',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -879,52 +991,71 @@
             </div>
 
             <script>
-                // Data untuk chart KAHF (nama sales, target brand, dan ach brand)
-                var salesNamesKahf = [];
-                var targetBrandKahf = [];
-                var achBrandKahf = [];
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data KAHF
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 49 || $sales["brand_name"] === "KAHF")
-                        salesNamesKahf.push('{{ $sales["sales_name"] }}');
-                        targetBrandKahf.push('{{ $sales["target_brand"] }}');
-                        achBrandKahf.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart KAHF
-                var ctxKahf = document.getElementById('myChartKahf').getContext('2d');
-                var myChartKahf = new Chart(ctxKahf, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesKahf,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandKahf,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandKahf,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'KAHF') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartKahf').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Kahf',
+                data: targetBrand,
+                backgroundColor: '#A2A378',
+                borderColor: '#A2A378',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Kahf',
+                data: achBrand,
+                backgroundColor: '#294B29',
+                borderColor: '#294B29',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1012,52 +1143,71 @@
             </div>
 
             <script>
-                // Data untuk chart INSTAPERFECT (nama sales, target brand, dan ach brand)
-                var salesNamesInstaperfect = [];
-                var targetBrandInstaperfect = [];
-                var achBrandInstaperfect = [];
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data INSTAPERFECT
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 50 || $sales["brand_name"] === "INSTAPERFECT")
-                        salesNamesInstaperfect.push('{{ $sales["sales_name"] }}');
-                        targetBrandInstaperfect.push('{{ $sales["target_brand"] }}');
-                        achBrandInstaperfect.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart INSTAPERFECT
-                var ctxInstaperfect = document.getElementById('myChartInstaperfect').getContext('2d');
-                var myChartInstaperfect = new Chart(ctxInstaperfect, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesInstaperfect,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandInstaperfect,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandInstaperfect,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'INSTAPERFECT') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartInstaperfect').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Instaperfect',
+                data: targetBrand,
+                backgroundColor: '#FFE5CA',
+                borderColor: '#FFE5CA',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Instaperfect',
+                data: achBrand,
+                backgroundColor: '#A64B2A',
+                borderColor: '#A64B2A',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1144,53 +1294,72 @@
                 </div>
             </div>
 
-            <script>
-                // Data untuk chart CRYSTALLURE (nama sales, target brand, dan ach brand)
-                var salesNamesCrystallure = [];
-                var targetBrandCrystallure = [];
-                var achBrandCrystallure = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data CRYSTALLURE
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 51 || $sales["brand_name"] === "CRYSTALLURE")
-                        salesNamesCrystallure.push('{{ $sales["sales_name"] }}');
-                        targetBrandCrystallure.push('{{ $sales["target_brand"] }}');
-                        achBrandCrystallure.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart CRYSTALLURE
-                var ctxCrystallure = document.getElementById('myChartCrystallure').getContext('2d');
-                var myChartCrystallure = new Chart(ctxCrystallure, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesCrystallure,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandCrystallure,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandCrystallure,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'CRYSTALLURE') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartCrystallure').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Crystallure',
+                data: targetBrand,
+                backgroundColor: '#E5BA73',
+                borderColor: '#E5BA73',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Crystallure',
+                data: achBrand,
+                backgroundColor: '#C58940',
+                borderColor: '#C58940',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1278,52 +1447,71 @@
         </div>
 
         <script>
-            // Data untuk chart BIODEF (nama sales, target brand, dan ach brand)
-            var salesNamesBiodef = [];
-            var targetBrandBiodef = [];
-            var achBrandBiodef = [];
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-            // Loop untuk mengisi data BIODEF
-            @foreach($dataSales as $sales)
-                @if($sales["brand_id"] == 52 || $sales["brand_name"] === "BIODEF")
-                    salesNamesBiodef.push('{{ $sales["sales_name"] }}');
-                    targetBrandBiodef.push('{{ $sales["target_brand"] }}');
-                    achBrandBiodef.push('{{ $sales["ach_brand"] }}');
-                @endif
-            @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-            // Inisialisasi chart BIODEF
-            var ctxBiodef = document.getElementById('myChartBiodef').getContext('2d');
-            var myChartBiodef = new Chart(ctxBiodef, {
-                type: 'bar',
-                data: {
-                    labels: salesNamesBiodef,
-                    datasets: [{
-                        label: 'Target Brand',
-                        data: targetBrandBiodef,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Ach Brand',
-                        data: achBrandBiodef,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'BIODEF') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
                 }
-            });
-        </script>
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartBiodef').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Biodef',
+                data: targetBrand,
+                backgroundColor: '#C4DFDF',
+                borderColor: '#C4DFDF',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Biodef',
+                data: achBrand,
+                backgroundColor: '#2F538C',
+                borderColor: '#2F538C',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
         <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1410,53 +1598,72 @@
                 </div>
             </div>
 
-            <script>
-                // Data untuk chart WONDERLY (nama sales, target brand, dan ach brand)
-                var salesNamesWonderly = [];
-                var targetBrandWonderly = [];
-                var achBrandWonderly = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                // Loop untuk mengisi data WONDERLY
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 53 || $sales["brand_name"] === "WONDERLY")
-                        salesNamesWonderly.push('{{ $sales["sales_name"] }}');
-                        targetBrandWonderly.push('{{ $sales["target_brand"] }}');
-                        achBrandWonderly.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Inisialisasi chart WONDERLY
-                var ctxWonderly = document.getElementById('myChartWonderly').getContext('2d');
-                var myChartWonderly = new Chart(ctxWonderly, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesWonderly,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandWonderly,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandWonderly,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'WONDERLY') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartWonderly').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Wonderly',
+                data: targetBrand,
+                backgroundColor: '#E1AFD1',
+                borderColor: '#E1AFD1',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Wonderly',
+                data: achBrand,
+                backgroundColor: '#AD88C6',
+                borderColor: '#AD88C6',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1543,53 +1750,72 @@
                     </div>
                 </div>
 
-                <script>
-                    // Data untuk chart LABORE (nama sales, target brand, dan ach brand)
-                    var salesNamesLabore = [];
-                    var targetBrandLabore = [];
-                    var achBrandLabore = [];
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-                    // Loop untuk mengisi data LABORE
-                    @foreach($dataSales as $sales)
-                        @if($sales["brand_id"] == 54 || $sales["brand_name"] === "LABORE")
-                            salesNamesLabore.push('{{ $sales["sales_name"] }}');
-                            targetBrandLabore.push('{{ $sales["target_brand"] }}');
-                            achBrandLabore.push('{{ $sales["ach_brand"] }}');
-                        @endif
-                    @endforeach
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                    // Inisialisasi chart LABORE
-                    var ctxLabore = document.getElementById('myChartLabore').getContext('2d');
-                    var myChartLabore = new Chart(ctxLabore, {
-                        type: 'bar',
-                        data: {
-                            labels: salesNamesLabore,
-                            datasets: [{
-                                label: 'Target Brand',
-                                data: targetBrandLabore,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'Ach Brand',
-                                data: achBrandLabore,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero: true
-                                    }
-                                }]
-                            }
-                        }
-                    });
-                </script>
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
+
+        // Filter only WARDAH brand
+        if (brandName === 'LABORE') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartLabore').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Labore',
+                data: targetBrand,
+                backgroundColor: '#FFCAD4',
+                borderColor: '#FFCAD4',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Labore',
+                data: achBrand,
+                backgroundColor: '#FF407D',
+                borderColor: '#FF407D',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
                 <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">
@@ -1675,54 +1901,72 @@
                     </div>
                 </div>
             </div>
+    <script>
+    // Initialize empty arrays to store data
+    var salesNames = [];
+    var targetBrand = [];
+    var achBrand = [];
 
-            <script>
-                // Data untuk chart TAVI (nama sales, target brand, dan ach brand)
-                var salesNamesTavi = [];
-                var targetBrandTavi = [];
-                var achBrandTavi = [];
+    // Initialize an object to track the latest updated_at for each sales name
+    var latestUpdate = {};
 
-                // Loop untuk mengisi data TAVI
-                @foreach($dataSales as $sales)
-                    @if($sales["brand_id"] == 55 || $sales["brand_name"] === "TAVI")
-                        salesNamesTavi.push('{{ $sales["sales_name"] }}');
-                        targetBrandTavi.push('{{ $sales["target_brand"] }}');
-                        achBrandTavi.push('{{ $sales["ach_brand"] }}');
-                    @endif
-                @endforeach
+    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
+    @foreach($dataSales as $sales)
+        var salesName = '{{ $sales["sales_name"] }}';
+        var updatedAt = '{{ $sales["updated_at"] }}';
+        var brandName = '{{ $sales["brand_name"] }}';
 
-                // Inisialisasi chart TAVI
-                var ctxTavi = document.getElementById('myChartTavi').getContext('2d');
-                var myChartTavi = new Chart(ctxTavi, {
-                    type: 'bar',
-                    data: {
-                        labels: salesNamesTavi,
-                        datasets: [{
-                            label: 'Target Brand',
-                            data: targetBrandTavi,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ach Brand',
-                            data: achBrandTavi,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+        // Filter only WARDAH brand
+        if (brandName === 'TAVI') {
+            // Check if the sales name is already in the array and if the current data has a newer updated_at
+            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
+                // Update the latest updated_at for the sales name
+                latestUpdate[salesName] = updatedAt;
+
+                // Update the data arrays
+                var index = salesNames.indexOf(salesName);
+                if (index !== -1) {
+                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
+                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
+                } else {
+                    salesNames.push(salesName);
+                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
+                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
+                }
+            }
+        }
+    @endforeach
+
+    // Initialize chart for Target Brand and Achieved Brand for WARDAH
+    var ctx2 = document.getElementById('myChartTavi').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: salesNames,
+            datasets: [{
+                label: 'Target Tavi',
+                data: targetBrand,
+                backgroundColor: '#FF7676',
+                borderColor: '#FF7676',
+                borderWidth: 1
+            },
+            {
+                label: 'Achievement Tavi',
+                data: achBrand,
+                backgroundColor: '#FFCD4B',
+                borderColor: '#FFCD4B',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
             <!-- Master Data Table -->
         <div class="col-xl-4 col-lg-6">

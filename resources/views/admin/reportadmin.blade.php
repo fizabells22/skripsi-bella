@@ -19,55 +19,61 @@
             </div>
         </div>
     </div>
-    <div class="row">
         <!-- Bar Chart: Top 5 Products by Value -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Value</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="barChartByValue"></canvas>
-                    </div>
-                    <script>
-                        var ctxValue = document.getElementById('barChartByValue').getContext('2d');
-                        var barChartByValue = new Chart(ctxValue, {
-                            type: 'bar',
-                            data: {
-                                labels: [
-                                    @foreach($formattedTopProductsByDelivered as $product)
-                                        '{{ $product['product_name'] }}',
-                                    @endforeach
-                                ],
-                                datasets: [{
-                                    label: 'Total Delivered Value',
-                                    data: [
-                                        @foreach($formattedTopProductsByDelivered as $product)
-                                            {{ $product['total_delivered'] }},
-                                        @endforeach
-                                    ],
-                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-                    </script>
-                </div>
-            </div>
+        <div class="col-xl-12 col-lg-12">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Value</h6>
         </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-area">
+                <canvas id="barChartByValue"></canvas>
+            </div>
+            <script>
+                var ctxValue = document.getElementById('barChartByValue').getContext('2d');
+                var barChartByValue = new Chart(ctxValue, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            @foreach($formattedTopProductsByDelivered as $product)
+                                '{{ \Illuminate\Support\Str::limit($product['product_name'], 30) }}',
+                            @endforeach
+                        ],
+                        datasets: [{
+                            label: 'Total Delivered Value',
+                            data: [
+                                @foreach($formattedTopProductsByDelivered as $product)
+                                    {{ $product['total_delivered'] }},
+                                @endforeach
+                            ],
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    position: 'right' // Positioning product names on the right side
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
         <!-- Bar Chart: Top 5 Products by Number of Customers -->
         <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">

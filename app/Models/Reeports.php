@@ -10,8 +10,9 @@ class Reeports extends Model
     use HasFactory;
     protected $table = 'reeports';
 
-    public function products() {
-        return $this->belongsTo(Products::class, 'product_id');
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
 
     public function salesRepresentatives() {
