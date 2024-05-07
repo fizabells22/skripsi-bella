@@ -24,7 +24,7 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" a href="{{ route('admin.adminHome') }}">
-           <img src="img/paragon-corp.png" alt="Gambar" style="max-width: 100%; height: auto;">
+           <img src="img/paragon-corp-white.png" alt="Gambar" style="max-width: 100%; height: auto;">
             </a>
 
             <!-- Divider -->
