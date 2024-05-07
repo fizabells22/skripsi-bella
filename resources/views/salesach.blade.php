@@ -12,31 +12,36 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        $(document).ready(function(){
-            // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
-            $('th[data-sortable]').click(function(){
-                var table = $(this).parents('table').eq(0)
-                var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-                this.asc = !this.asc
-                if (!this.asc){
-                    rows = rows.reverse()
-                    $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down')
-                } else {
-                    $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up')
-                }
-                for (var i = 0; i < rows.length; i++){table.append(rows[i])}
-            })
-            // Fungsi untuk membandingkan nilai
-            function comparer(index) {
-                return function(a, b) {
-                    var valA = getCellValue(a, index), valB = getCellValue(b, index)
-                    return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-                }
+    $(document).ready(function(){
+        // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
+        $('th[data-sortable]').click(function(){
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+            if (!this.asc){
+                rows = rows.reverse();
+                $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down');
+            } else {
+                $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up');
             }
-            // Fungsi untuk mendapatkan nilai sel
-            function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
-        })
-    </script>
+            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+        });
+        // Fungsi untuk membandingkan nilai
+        function comparer(index) {
+            return function(a, b) {
+                var valA = getCellValue(a, index), valB = getCellValue(b, index);
+                // Mengubah string menjadi angka jika kolom adalah target_brand atau ach_brand
+                if(index === 1 || index === 2){
+                    valA = parseFloat(valA.replace(/\./g, '').replace(',', '.'));
+                    valB = parseFloat(valB.replace(/\./g, '').replace(',', '.'));
+                }
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB);
+            };
+        }
+        // Fungsi untuk mendapatkan nilai sel
+        function getCellValue(row, index){ return $(row).children('td').eq(index).text(); }
+    });
+</script>
     <h2 class="m-0 font-weight-bold text-primary">Report Sales Achievement</h2>
     <div class="container-fluid">
     </div>

@@ -9,19 +9,27 @@
     <div class="container-fluid">
     </div>
 </br>
-<!-- Bar Chart: Top 5 Products by Value -->
+<style>
+        .custom-card-body {
+            max-height: 375px;
+            overflow-y: auto;
+        }
+</style>
 <div class="row">
-<div class="col-xl-8 col-lg-7">
-    <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Value</h6>
-        </div>
-        <!-- Card Body -->
-        <div class="card-body">
-            <div class="chart-area">
-                <canvas id="barChartByValue"></canvas>
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Value</h6>
             </div>
+            <!-- Card Body -->
+            <div class="card-body custom-card-body"> <!-- Tambahkan kelas custom-card-body di sini -->
+                <div class="chart-area">
+                    <canvas id="barChartByValue"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
             <script>
             var ctxValue = document.getElementById('barChartByValue').getContext('2d');
             var barChartByValue = new Chart(ctxValue, {
@@ -57,7 +65,7 @@
                         xAxes: [{
                             ticks: {
                                 beginAtZero: true,
-                                position: 'right' // Positioning product names on the right side
+                                position: 'right'
                             }
                         }],
                         yAxes: [{
@@ -72,29 +80,26 @@
                             align: 'end',
                             color: 'black',
                             formatter: function(value, context) {
-                                return value; // Mengembalikan nilai data untuk ditampilkan sebagai keterangan
+                                return value; 
                             }
                         }
                     }
                 }
             });
         </script>
-        </div>
-    </div>
-    </div>
 
- <!-- Pie Chart -->
-<div class="col-xl-4 col-lg-5" style="overflow-x: auto;">
-    <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Number of Customers</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Customers</h6>
         </div>
-        <!-- Card Body -->
-        <div class="card-body">
-            <div class="chart-pie">
-                <canvas id="doughnutChartByCustomers"></canvas>
-            </div>
+        <div class="card-body custom-card-body">
+            <!-- Card Body -->
+            <div class="card-body custom-card-body">
+                <div class="chart-pie">
+                    <canvas id="doughnutChartByCustomers"></canvas>
+                </div>
             <script>
                 var ctxCustomers = document.getElementById('doughnutChartByCustomers').getContext('2d');
                 var doughnutChartByCustomers = new Chart(ctxCustomers, {
@@ -106,7 +111,7 @@
                             @endforeach
                         ],
                         datasets: [{
-                            label: 'Number of Customers',
+                            label: 'Total Customers',
                             data: [
                                 @foreach($formattedTopProductsByCustomerPurchases as $product)
                                     {{ $product['total_purchases'] }},
@@ -134,13 +139,13 @@
                             padding: {
                                 left: 10,
                                 right: 0,
-                                top: 0, // Menggeser doughnut chart ke bawah agar berada di tengah
+                                top: 0,
                                 bottom: 0
                             }
                         },
                         legend: {
-                            position: 'bottom', // Menempatkan keterangan di bawah chart
-                            align: 'start', // Mulai keterangan dari sisi kiri
+                            position: 'bottom', 
+                            align: 'start',
                         },
                         plugins: {
                             datalabels: {
@@ -152,10 +157,10 @@
             </script>
         </div>
     </div>
-</div>
-</div>
+    </div>
+    </div>
+    </div>
 
-<div class="row">
     <div class="col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
@@ -170,7 +175,6 @@
             </div>
         </div>
     </div>
-</div>
 <script>
     var ctxLine = document.getElementById('lineChartByMonth').getContext('2d');
     var data = [

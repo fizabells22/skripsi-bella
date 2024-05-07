@@ -10,31 +10,36 @@
     }
     </style>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
+     <script>
     $(document).ready(function(){
-    // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
-    $('th[data-sortable]').click(function(){
-        var table = $(this).parents('table').eq(0)
-        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-        this.asc = !this.asc
-        if (!this.asc){
-            rows = rows.reverse()
-            $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down')
-        } else {
-            $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up')
+        // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
+        $('th[data-sortable]').click(function(){
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+            if (!this.asc){
+                rows = rows.reverse();
+                $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down');
+            } else {
+                $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up');
+            }
+            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+        });
+        // Fungsi untuk membandingkan nilai
+        function comparer(index) {
+            return function(a, b) {
+                var valA = getCellValue(a, index), valB = getCellValue(b, index);
+                // Mengubah string menjadi angka jika kolom adalah target_brand atau ach_brand
+                if(index === 1 || index === 2){
+                    valA = parseFloat(valA.replace(/\./g, '').replace(',', '.'));
+                    valB = parseFloat(valB.replace(/\./g, '').replace(',', '.'));
+                }
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB);
+            };
         }
-        for (var i = 0; i < rows.length; i++){table.append(rows[i])}
-    })
-    // Fungsi untuk membandingkan nilai
-    function comparer(index) {
-        return function(a, b) {
-            var valA = getCellValue(a, index), valB = getCellValue(b, index)
-            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-        }
-    }
-    // Fungsi untuk mendapatkan nilai sel
-    function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
-})
+        // Fungsi untuk mendapatkan nilai sel
+        function getCellValue(row, index){ return $(row).children('td').eq(index).text(); }
+    });
 </script>
                     <h2 class="m-0 font-weight-bold text-primary">Master Data</h2>
                     <div class="container-fluid">
@@ -213,7 +218,7 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Delivered Nominal Bruto Incppns
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Delivered Nominal Bruto Incppns (Rp)
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -240,7 +245,7 @@
                                             <tr>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->reports_id }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->bulan_report }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->delivered_nominal_bruto_incppns }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($reportss->delivered_nominal_bruto_incppns, 0, ',', '.') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->product_id }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->sales_id }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->customers_kd }}</td>
@@ -267,11 +272,11 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
+                                                <th style="text-align: center;border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand (Rp)
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement Brand
+                                                <th style="text-align: center;border-bottom: 1px solid #dee2e6;"data-sortable>Achievement Brand (Rp)
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -293,9 +298,9 @@
                                             @foreach($salesAchievements as $salesAchievementss)
                                             <tr>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->achievement_id }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->target_brand }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->ach_brand }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->persen_brand }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->target_brand, 0, ',', '.') }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->ach_brand, 0, ',', '.') }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->persen_brand * 100, 0, ',', '.') }}%</td>  
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->sales_id }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->brand_id }}</td>
                                            </tr>
@@ -379,18 +384,17 @@
                                             @foreach($salesScoreboards as $salesScoreboardss)
                                             <tr>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->scoreboard_id }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->persen_absensis }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->target_coverages }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->persen_absensis * 100, 0, ',', '.') }}%</td>                                           <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->target_coverages }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->actual_coverages }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->act_tar_coverages_persen }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->act_tar_coverages_persen * 100, 0, ',', '.') }}%</td>  
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->jumlahh_rao }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->persen_raao }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->persen_raao * 100, 0, ',', '.') }}%</td>  
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->plan_calls }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->actual_calls }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->act_plan_calls_persen }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->act_plan_calls_persen * 100, 0, ',', '.') }}%</td>  
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->target_ecalls }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->actual_ecalls }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->act_plan_ecalls_persen }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->act_plan_ecalls_persen * 100, 0, ',', '.') }}%</td>  
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->sales_id }}</td>
                                            </tr>
                                             @endforeach
