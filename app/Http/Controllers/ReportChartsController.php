@@ -70,4 +70,61 @@ class ReportChartsController extends Controller
             'formattedSalesDistributionByMonth' => $formattedSalesDistributionByMonth,
         ]);
     }
+
+    public function reportchartsuser()
+    {
+        // Fetch data for top 5 products by delivered_bruto_incppns
+        $topProductsByDelivered = Reeports::with('product')
+            ->select('product_id', DB::raw('SUM(delivered_nominal_bruto_incppns) as totalDeliveredBrutoIncPpn'))
+            ->groupBy('product_id')
+            ->orderByDesc('totalDeliveredBrutoIncPpn')
+            ->limit(5)
+            ->get();
+
+        // Format data for top 5 products by delivered value
+        $formattedTopProductsByDelivered = $topProductsByDelivered->map(function ($product) {
+            return [
+                'product_name' => $product->product->product_name,
+                'total_delivered' => $product->totalDeliveredBrutoIncPpn,
+            ];
+        })->toArray();
+
+        // Fetch data for top 5 products by customer purchases
+        $topProductsByCustomerPurchases = Reeports::with('product')
+            ->select('product_id', DB::raw('COUNT(*) as totalCustomerPurchases'))
+            ->groupBy('product_id')
+            ->orderByDesc('totalCustomerPurchases')
+            ->limit(5)
+            ->get();
+
+        // Format data for top 5 products by customer purchases
+        $formattedTopProductsByCustomerPurchases = $topProductsByCustomerPurchases->map(function ($product) {
+            return [
+                'product_name' => $product->product->product_name,
+                'total_purchases' => $product->totalCustomerPurchases,
+            ];
+        })->toArray();
+
+        // Fetch sales distribution by month
+        $salesDistributionByMonth = Reeports::select(
+                DB::raw('bulan_report as month'),
+                DB::raw('SUM(delivered_nominal_bruto_incppns) as totalSales')
+            )
+            ->groupBy('month')
+            ->get();
+
+        // Format sales distribution data
+        $formattedSalesDistributionByMonth = [];
+        foreach ($salesDistributionByMonth as $sales) {
+            $monthName = Carbon::create()->month($sales->month)->format('F');
+            $formattedSalesDistributionByMonth[$monthName] = $sales->totalSales;
+        }
+
+        // Send all formatted data to the view
+        return view('report', [
+            'formattedTopProductsByDelivered' => $formattedTopProductsByDelivered,
+            'formattedTopProductsByCustomerPurchases' => $formattedTopProductsByCustomerPurchases,
+            'formattedSalesDistributionByMonth' => $formattedSalesDistributionByMonth,
+        ]);
+    }
 };

@@ -50,7 +50,7 @@ Route::get('/dashboardsales', [PagesController::class, 'dashboardsales'])->name(
 Route::get('/dashboardracingadmin', [PagesController::class, 'dashboardracingadmin'])->name('dashboardracingadmin');
 Route::get('/dashboardsalesadmin', [PagesController::class, 'dashboardsalesadmin'])->name('dashboardsalesadmin');
 
-Route::get('/report', [PagesController::class, 'report'])->name('report');
+Route::get('/report', [ReportChartsController::class, 'reportchartsuser'])->name('report');
 Route::get('/salesach', [SalesAchChartsController::class, 'chartsuser'])->name('salesach');
 Route::get('/salesscore', [SalesScoreChartsController::class, 'chartscoreuser'])->name('salesscore');
 
