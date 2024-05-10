@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Session;
 use App\Models\Report;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class ReportController extends Controller
         $filePath = $file->storeAs('csvfiles', $file->getClientOriginalName());
 
         $data = array_map('str_getcsv', file(storage_path('app/' . $filePath)));
-
+            try{
             foreach ($data as $row) {
                 Report::create([
                     'bulan' => $row[0],
@@ -36,7 +36,13 @@ class ReportController extends Controller
                     'delivered_nominal_bruto_incppn' => (int)$row[7],
                 ]);
             }
-                return redirect()->route('reportadmin');
-        }   
-}
+            Session::flash('success', 'Your data have been saved successfully');
+            return redirect()->route('reportadmin');
+        }   catch (\Exception $e) {
+            Session::flash('error', 'Failed to upload file. Please check the file format and try again.');
+            return redirect()->back();
+            }
+        }
+    }
+    
 

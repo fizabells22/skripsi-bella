@@ -1,8 +1,10 @@
 <?php
 
+
 namespace App\Http\Controllers;
 use App\Models\SalesReports;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class SalesReportController extends Controller
 {
@@ -20,7 +22,7 @@ class SalesReportController extends Controller
         $filePath = $file->storeAs('csvfiles', $file->getClientOriginalName());
 
         $data = array_map('str_getcsv', file(storage_path('app/' . $filePath)));
-
+        try{
         foreach ($data as $row) {
             SalesReports::create([
                 'dc' => $row[0],
@@ -40,6 +42,11 @@ class SalesReportController extends Controller
                 'act_plan_ecall_persen' => (double)$row[14],
             ]);
         }
-            return redirect()->route('salesscoreadmin');
-    }   
+        Session::flash('success', 'Your data have been saved successfully');
+        return redirect()->route('salesscoreadmin');
+    }   catch (\Exception $e) {
+        Session::flash('error', 'Failed to upload file. Please check the file format and try again.');
+        return redirect()->back();
+        }
+    }
 }

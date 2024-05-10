@@ -3,6 +3,7 @@
 
 @section('content')
 <main>
+</script>
     <style>
         .custom-card-body {
             max-height: 375px;

@@ -2,7 +2,7 @@
 @section('title','Upload File | Dashboard Sales Performance & Racing Doors SKU')
 
 @section('content')
-      <main>
+    <main>
     <h2 class="m-0 font-weight-bold text-primary">Upload Sales Scoreboard</h2>
     <div class="container-fluid">
     <!-- Content Row -->
@@ -12,7 +12,8 @@
                 <div class="card-body">
                 <h2 class="card-title text-center text-primary" ></h2>
                         <div class="mb-3">
-                            <form action="{{route ('importsales')}}" method="POST" enctype="multipart/form-data">
+                        <form action="{{route ('importsales')}}" method="POST" enctype="multipart/form-data">
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       @csrf
       <div class="import-kotak" style="display: flex;justify-content: center;align-items: center;text-align: center;">
       <div class="form-group">

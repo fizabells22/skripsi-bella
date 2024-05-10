@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Session;
 use App\Models\SalesAchs;
 use App\Models\SalesRepresentative;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class SalesAchievementReportController extends Controller
     
             $data = array_map('str_getcsv', file(storage_path('app/' . $filePath)));
             
+            try{
             foreach ($data as $row) {
                 SalesAchs::create([
                     'dc' => $row[0],
@@ -65,8 +67,13 @@ class SalesAchievementReportController extends Controller
                 'tavi_persen' => (double)$row[41],
             ]);
             }
-                return redirect()->route('salesachadmin');
-        }   
+            Session::flash('success', 'Your data have been saved successfully');
+            return redirect()->route('salesachadmin');
+        }   catch (\Exception $e) {
+            Session::flash('error', 'Failed to upload file. Please check the file format and try again.');
+            return redirect()->back();
+        }
+    }
 
         public function tabelsalesrepre()
     {
