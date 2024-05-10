@@ -27,7 +27,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">Top 5 Products by Value</h6>
             </div>
             <!-- Card Body -->
-            <div class="card-body custom-card-body"> <!-- Tambahkan kelas custom-card-body di sini -->
+            <div class="card-body custom-card-body">
                 <div class="chart-area">
                     <canvas id="barChartByValue"></canvas>
                 </div>
