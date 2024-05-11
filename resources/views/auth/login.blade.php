@@ -17,8 +17,6 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet'>
 
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
 <div class="login">
