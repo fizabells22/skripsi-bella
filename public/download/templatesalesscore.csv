@@ -1,5 +1,5 @@
 dc,sales_name,sales_category,%_absensi,target_coverage,actual_coverage,act/tar_coverage _%,jumlah_rao,%_rao,plan_call,actual_call,act/plan_call_%,target_ecall,actual_ecall,act/plan_ecall_%
-,,,,,,,,,,,,,,
+KEDIRI,DUMMY,SC,0.96,100,30,0.3,29,0.97,90,60,0.67,100,50,0.5
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
