@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/project-style.css">
-    <link rel="icon" href="img/paragon-corp.png">
+    <link rel="icon" href="img/paragon.png">
     <title>Login Page | Dashboard Sales Performance & Racing Doors SKU</title>
 
     <!-- Fonts -->

@@ -5,43 +5,12 @@
 <main>
     <style>
         .custom-card-body {
-            max-height: 375px;
+            max-height: 315px;
             overflow-y: auto;
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-    $(document).ready(function(){
-        // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
-        $('th[data-sortable]').click(function(){
-            var table = $(this).parents('table').eq(0);
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-            this.asc = !this.asc;
-            if (!this.asc){
-                rows = rows.reverse();
-                $(this).find('.sortable-icon i').removeClass('fa-sort-up').addClass('fa-sort-down');
-            } else {
-                $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up');
-            }
-            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
-        });
-        // Fungsi untuk membandingkan nilai
-        function comparer(index) {
-            return function(a, b) {
-                var valA = getCellValue(a, index), valB = getCellValue(b, index);
-                // Mengubah string menjadi angka jika kolom adalah target_brand atau ach_brand
-                if(index === 1 || index === 2){
-                    valA = parseFloat(valA.replace(/\./g, '').replace(',', '.'));
-                    valB = parseFloat(valB.replace(/\./g, '').replace(',', '.'));
-                }
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB);
-            };
-        }
-        // Fungsi untuk mendapatkan nilai sel
-        function getCellValue(row, index){ return $(row).children('td').eq(index).text(); }
-    });
-</script>
     <h2 class="m-0 font-weight-bold text-primary">Report Sales Achievement</h2>
     <div class="container-fluid">
         <!-- Content Row -->
@@ -56,229 +25,217 @@
     <div class="row">
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Achievement All Brand</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-areaallbrand">
+                        <canvas id="myAreaChartallbrand"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Master Data Table for ALL BRAND -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card shadow mb-4 custom-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Master Data All Brand</h6>
+                </div>
+                <br>
+            <div class="col-12">
+            <input type="date" id="datePicker" class="form-control">
+        </div>
+                <div class="card-body custom-card-body">
+                    <table style="width: 100%; height: 100%">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                                </th>
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target All Brand
+                                    </span>
+                                </th>
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                                </th>
+                                <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                                </th>
+                            </tr>
+                        </thead>
+                        <tr>
+                        <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBody">
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+<script>
+    var salesData = @json($dataSales);
+
+    function updateTable(date) {
+        var tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'ALL BRAND' && sales.updated_at.startsWith(date);
+        });
+
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
+
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
+
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChart(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChart(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartallbrand').getContext('2d');
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: salesNames,
+                datasets: [{
+                    label: 'Target All Brand',
+                    data: targetBrand,
+                    backgroundColor: '#F5DD61',
+                    borderColor: '#F5DD61',
+                    borderWidth: 1
+                }, {
+                    label: 'Achievement All Brand',
+                    data: achBrand,
+                    backgroundColor: '#68D2E8',
+                    borderColor: '#68D2E8',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    document.getElementById('datePicker').addEventListener('change', function() {
+        updateTable(this.value);
+    });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePicker').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTable(today);
+</script>
+
+<!-- ACH WARDAH -->
+<div class="col-xl-8 col-lg-7">
     <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Achievement All Brand</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Wardah</h6>
         </div>
         <!-- Card Body -->
         <div class="card-body">
-            <div class="chart-areaallbrand">
-                <canvas id="myAreaChartallbrand"></canvas>
+            <div class="chart-areawardah">
+                <canvas id="myAreaChartwardah"></canvas>
             </div>
         </div>
     </div>
 </div>
-<script>
-    // Initialize arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
-    var persenBrand = [];
-
-    // Object to track the latest updated_at for each sales name
-    var latestUpdate = {};
-
-    // Loop through the data
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
-
-        // Process only 'ALL BRAND'
-        if (brandName === 'ALL BRAND') {
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
-
-                // Update data
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}', 10);
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}', 10);
-                    persenBrand[index] = parseFloat('{{ $sales["persen_brand"] }}'); // Assuming this is a float
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}', 10));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}', 10));
-                    persenBrand.push(parseFloat('{{ $sales["persen_brand"] }}')); // Assuming this is a float
-                }
-            }
-        }
-    @endforeach
-
-    var ctx = document.getElementById('myAreaChartallbrand').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: salesNames,
-            datasets: [{
-                label: 'Target All Brand',
-                data: targetBrand,
-                backgroundColor: '#F5DD61',
-                borderColor: '#F5DD61',
-                borderWidth: 1
-            }, {
-                label: 'Ach All Brand',
-                data: achBrand,
-                backgroundColor: '#68D2E8',
-                borderColor: '#68D2E8',
-                borderWidth: 1
-            }, {
-                label: '% Achievement',
-                data: persenBrand,
-                type: 'line',
-                fill: false,
-                backgroundColor: '#FAA300',
-                borderColor: '#FAA300',
-                borderWidth: 2,
-                yAxisID: 'y2'
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                },
-                y2: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    beginAtZero: true,
-                    grid: {
-                        drawOnChartArea: false
-                    }
-                }
-            }
-        }
-    });
-</script>
-
- <!-- Master Data Table for ALL BRAND -->
+<!-- Master Data Table for WARDAH -->
 <div class="col-xl-4 col-lg-6">
     <div class="card shadow mb-4 custom-card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Master Data ALL BRAND</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Wardah</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerWardah" class="form-control">
         </div>
         <div class="card-body custom-card-body">
             <table style="width: 100%; height: 100%">
                 <thead>
                     <tr>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;"data-sortable>Target ALL BRAND
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Wardah
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;width: 50%;"data-sortable>Pencapaian
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;width: 20%;"data-sortable>Achievement
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    @php
-                    $salesDataAllBrand = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "ALL BRAND")
-                    @if(!isset($salesDataAllBrand[$data['sales_name']]))
-                    @php
-                    $salesDataAllBrand[$data['sales_name']] = [
-                        'target_all_brand' => 0,
-                        'ach_all_brand' => 0,
-                        'persen_all_brand' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesDataAllBrand[$data['sales_name']]['target_all_brand'] = $data['target_brand'];
-                    $salesDataAllBrand[$data['sales_name']]['ach_all_brand'] = $data['ach_brand'];
-                    $salesDataAllBrand[$data['sales_name']]['persen_all_brand'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesDataAllBrand as $salesName => $sales)
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_all_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_all_brand'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_all_brand'] * 100, 0, ',', '.') }}%</td>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyWardah">
                     </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-        <!-- ACH WARDAH -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Achievement Wardah</h6>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="chart-areawardah">
-                    <canvas id="myAreaChartWardah"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+    var salesData = @json($dataSales);
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableWardah(date) {
+        var tableBody = document.getElementById('tableBodyWardah');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'WARDAH' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'WARDAH') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartWardah(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartWardah(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartwardah').getContext('2d');
+        if (window.myChartWardah) {
+            window.myChartWardah.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myAreaChartWardah').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartWardah = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -296,290 +253,240 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
-    });
-</script>
+        });
+    }
 
- <!-- Master Data Table for WARDAH -->
+    document.getElementById('datePickerWardah').addEventListener('change', function() {
+        updateTableWardah(this.value);
+    });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerWardah').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableWardah(today);
+</script>
+        
+<!-- ACH EMINA -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Emina</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areaemina">
+                <canvas id="myAreaChartemina"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for EMINA -->
 <div class="col-xl-4 col-lg-6">
     <div class="card shadow mb-4 custom-card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Master Data Wardah</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Emina</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerEmina" class="form-control">
         </div>
         <div class="card-body custom-card-body">
             <table style="width: 100%; height: 100%">
                 <thead>
                     <tr>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Emina
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
                         </th>
-                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                            <span class="sortable-icon">
-                                <i class="fas fa-sort"></i>
-                            </span>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    @php
-                    $salesDataWardah = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "WARDAH")
-                    @if(!isset($salesDataWardah[$data['sales_name']]))
-                    @php
-                    $salesDataWardah[$data['sales_name']] = [
-                        'target_wardah' => 0,
-                        'ach_wardah' => 0,
-                        'persen_wardah' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesDataWardah[$data['sales_name']]['target_wardah'] = $data['target_brand'];
-                    $salesDataWardah[$data['sales_name']]['ach_wardah'] = $data['ach_brand'];
-                    $salesDataWardah[$data['sales_name']]['persen_wardah'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesDataWardah as $salesName => $sales)
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_wardah'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_wardah'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_wardah'] * 100, 0, ',', '.') }}%</td>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyEmina">
                     </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH EMINA -->
-            <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Achievement Emina</h6>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="chart-areaemina">
-                    <canvas id="myAreaChartEmina"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+<script>
+    var salesData = @json($dataSales);
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+    function updateTableEmina(date) {
+        var tableBody = document.getElementById('tableBodyEmina');
+        tableBody.innerHTML = '';
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'EMINA' && sales.updated_at.startsWith(date);
+        });
 
-        // Filter only WARDAH brand
-        if (brandName === 'EMINA') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
+
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartEmina(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartEmina(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartemina').getContext('2d');
+        if (window.myChartEmina) {
+            window.myChartEmina.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myAreaChartEmina').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: salesNames,
-            datasets: [{
-                label: 'Target Emina',
-                data: targetBrand,
-                backgroundColor: '#FF9E9E',
-                borderColor: '#FFCAC8',
-                borderWidth: 1
+        window.myChartEmina = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: salesNames,
+                datasets: [{
+                    label: 'Target Emina',
+                    data: targetBrand,
+                    backgroundColor: '#FF9E9E',
+                    borderColor: '#FFCAC8',
+                    borderWidth: 1
+                }, {
+                    label: 'Achievement Emina',
+                    data: achBrand,
+                    backgroundColor: '#FF6464',
+                    borderColor: '#FF7D7D',
+                    borderWidth: 1
+                }]
             },
-            {
-                label: 'Achievement Emina',
-                data: achBrand,
-                backgroundColor: '#FF6464',
-                borderColor: '#FF7D7D',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerEmina').addEventListener('change', function() {
+        updateTableEmina(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerEmina').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableEmina(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Emina</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                        $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                        @if($data['brand_name'] === "EMINA")
-                            @if(!isset($salesData[$data['sales_name']]))
-                                @php
-                                    $salesData[$data['sales_name']] = [
-                                        'target_emina' => 0,
-                                        'ach_emina' => 0,
-                                        'persen_emina' => 0,
-                                    ];
-                                @endphp
-                            @endif
-                            @php
-                                // Update sales data with latest values
-                                $salesData[$data['sales_name']]['target_emina'] = $data['target_brand'];
-                                $salesData[$data['sales_name']]['ach_emina'] = $data['ach_brand'];
-                                $salesData[$data['sales_name']]['persen_emina'] = $data['persen_brand'];
-                            @endphp
-                        @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
-                        <tr>
-                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_emina'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_emina'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_emina'] * 100, 0, ',', '.') }}%</td>
-                        </tr>
-                    @endforeach
+            <!-- ACH MAKEOVER -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement MakeOver</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areamakeover">
+                <canvas id="myAreaChartmakeover"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for MAKEOVER -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data MakeOver</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerMakeover" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target MakeOver
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
+                    </tr>
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyMakeover">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-            <!-- ACH MAKEOVER -->
-            <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Achievement MakeOver</h6>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="chart-areamo">
-                    <canvas id="myChartMakeover"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+<script>
+    var salesData = @json($dataSales);
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+    function updateTableMakeover(date) {
+        var tableBody = document.getElementById('tableBodyMakeover');
+        tableBody.innerHTML = '';
 
-        // Filter only WARDAH brand
-        if (brandName === 'MAKEOVER') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'MAKEOVER' && sales.updated_at.startsWith(date);
+        });
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
+
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
+
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartMakeover(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartMakeover(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartmakeover').getContext('2d');
+        if (window.myChartMakeover) {
+            window.myChartMakeover.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartMakeover').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartMakeover = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -597,140 +504,115 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerMakeover').addEventListener('change', function() {
+        updateTableMakeover(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerMakeover').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableMakeover(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data MakeOver</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                        $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                        @if($data['brand_name'] === "MAKEOVER")
-                            @if(!isset($salesData[$data['sales_name']]))
-                                @php
-                                    $salesData[$data['sales_name']] = [
-                                        'target_makeover' => 0,
-                                        'ach_makeover' => 0,
-                                        'persen_makeover' => 0,
-                                    ];
-                                @endphp
-                            @endif
-                            @php
-                                // Update sales data with latest values
-                                $salesData[$data['sales_name']]['target_makeover'] = $data['target_brand'];
-                                $salesData[$data['sales_name']]['ach_makeover'] = $data['ach_brand'];
-                                $salesData[$data['sales_name']]['persen_makeover'] = $data['persen_brand'];
-                            @endphp
-                        @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
-                        <tr>
-                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_makeover'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_makeover'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_makeover'] * 100, 0, ',', '.') }}%</td>
-                        </tr>
-                    @endforeach
+            <!-- ACH OMG -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement OMG</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areaomg">
+                <canvas id="myAreaChartomg"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for OMG -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data OMG</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerOmg" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target OMG
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
+                    </tr>
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyOmg">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-            <!-- ACH OMG -->
-            <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Achievement OMG</h6>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="chart-areaomg">
-                    <canvas id="myChartOmg"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+<script>
+    var salesData = @json($dataSales);
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+    function updateTableOmg(date) {
+        var tableBody = document.getElementById('tableBodyOmg');
+        tableBody.innerHTML = '';
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'OMG' && sales.updated_at.startsWith(date);
+        });
 
-        // Filter only WARDAH brand
-        if (brandName === 'OMG') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
+
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartOmg(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartOmg(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartomg').getContext('2d');
+        if (window.myChartOmg) {
+            window.myChartOmg.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartOmg').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartOmg = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -748,141 +630,115 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerOmg').addEventListener('change', function() {
+        updateTableOmg(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerOmg').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableOmg(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data OMG</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                        $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                        @if($data['brand_name'] === "OMG")
-                            @if(!isset($salesData[$data['sales_name']]))
-                                @php
-                                    $salesData[$data['sales_name']] = [
-                                        'target_omg' => 0,
-                                        'ach_omg' => 0,
-                                        'persen_omg' => 0,
-                                    ];
-                                @endphp
-                            @endif
-                            @php
-                                // Update sales data with latest values
-                                $salesData[$data['sales_name']]['target_omg'] = $data['target_brand'];
-                                $salesData[$data['sales_name']]['ach_omg'] = $data['ach_brand'];
-                                $salesData[$data['sales_name']]['persen_omg'] = $data['persen_brand'];
-                            @endphp
-                        @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
-                        <tr>
-                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_omg'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_omg'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_omg'] * 100, 0, ',', '.') }}%</td>
-                        </tr>
-                    @endforeach
+<!-- Area Chart for PUTRI -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Putri</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areaputri">
+                <canvas id="myAreaChartputri"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for PUTRI -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Putri</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerPutri" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Putri
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
+                    </tr>
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyPutri">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH PUTRI -->
-            <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Achievement Putri</h6>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="chart-areaputri">
-                    <canvas id="myChartPutri"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+    var salesData = @json($dataSales);
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTablePutri(date) {
+        var tableBody = document.getElementById('tableBodyPutri');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'PUTRI' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'PUTRI') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartPutri(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartPutri(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartputri').getContext('2d');
+        if (window.myChartPutri) {
+            window.myChartPutri.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartPutri').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartPutri = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -900,141 +756,116 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerPutri').addEventListener('change', function() {
+        updateTablePutri(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerPutri').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTablePutri(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Putri</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                        $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                        @if($data['brand_name'] === "PUTRI")
-                            @if(!isset($salesData[$data['sales_name']]))
-                                @php
-                                    $salesData[$data['sales_name']] = [
-                                        'target_putri' => 0,
-                                        'ach_putri' => 0,
-                                        'persen_putri' => 0,
-                                    ];
-                                @endphp
-                            @endif
-                            @php
-                                // Update sales data with latest values
-                                $salesData[$data['sales_name']]['target_putri'] = $data['target_brand'];
-                                $salesData[$data['sales_name']]['ach_putri'] = $data['ach_brand'];
-                                $salesData[$data['sales_name']]['persen_putri'] = $data['persen_brand'];
-                            @endphp
-                        @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
-                        <tr>
-                            <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_putri'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_putri'], 0, ',', '.') }}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_putri'] * 100, 0, ',', '.') }}%</td>
-                        </tr>
-                    @endforeach
+            <!-- ACH KAHF -->
+<!-- Area Chart for KAHF -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement KAHF</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areakahf">
+                <canvas id="myAreaChartkahf"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for KAHF -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Kahf</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerKahf" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Kahf
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
+                    </tr>
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyKahf">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH KAHF -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Achievement Kahf</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-areakahf">
-                            <canvas id="myChartKahf"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<script>
+    var salesData = @json($dataSales);
 
-            <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableKahf(date) {
+        var tableBody = document.getElementById('tableBodyKahf');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'KAHF' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'KAHF') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartKahf(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartKahf(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartkahf').getContext('2d');
+        if (window.myChartKahf) {
+            window.myChartKahf.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartKahf').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartKahf = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1052,141 +883,115 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerKahf').addEventListener('change', function() {
+        updateTableKahf(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerKahf').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableKahf(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Kahf</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "KAHF")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_kahf' => 0,
-                        'ach_kahf' => 0,
-                        'persen_kahf' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_kahf'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_kahf'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_kahf'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+            <!-- ACH INSTAPERFECT -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Instaperfect</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areainstaperfect">
+                <canvas id="myAreaChartinstaperfect"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for INSTAPERFECT -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Instaperfect</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerInstaperfect" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_kahf'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_kahf'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_kahf'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Instaperfect
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyInstaperfect">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH INSTAPERFECT -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Achievement Instaperfect</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-areainstaperfect">
-                            <canvas id="myChartInstaperfect"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<script>
+    var salesData = @json($dataSales);
 
-            <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableInstaperfect(date) {
+        var tableBody = document.getElementById('tableBodyInstaperfect');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'INSTAPERFECT' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'INSTAPERFECT') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartInstaperfect(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartInstaperfect(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartinstaperfect').getContext('2d');
+        if (window.myChartInstaperfect) {
+            window.myChartInstaperfect.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartInstaperfect').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartInstaperfect = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1204,141 +1009,115 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerInstaperfect').addEventListener('change', function() {
+        updateTableInstaperfect(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerInstaperfect').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableInstaperfect(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Instaperfect</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "INSTAPERFECT")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_instaperfect' => 0,
-                        'ach_instaperfect' => 0,
-                        'persen_instaperfect' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_instaperfect'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_instaperfect'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_instaperfect'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+            <!-- ACH CRYSTALLURE -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Crystallure</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areacrystallure">
+                <canvas id="myAreaChartcrystallure"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for CRYSTALLURE -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Crystallure</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerCrystallure" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_instaperfect'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_instaperfect'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_instaperfect'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Crystallure
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyCrystallure">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH CRYSTALLURE -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Achievement Crystallure</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-areacrystallure">
-                            <canvas id="myChartCrystallure"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<script>
+    var salesData = @json($dataSales);
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableCrystallure(date) {
+        var tableBody = document.getElementById('tableBodyCrystallure');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'CRYSTALLURE' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'CRYSTALLURE') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartCrystallure(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartCrystallure(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartcrystallure').getContext('2d');
+        if (window.myChartCrystallure) {
+            window.myChartCrystallure.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartCrystallure').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartCrystallure = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1356,141 +1135,117 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerCrystallure').addEventListener('change', function() {
+        updateTableCrystallure(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerCrystallure').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableCrystallure(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Crystallure</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "CRYSTALLURE")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_crystallure' => 0,
-                        'ach_crystallure' => 0,
-                        'persen_crystallure' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_crystallure'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_crystallure'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_crystallure'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+
+        <!-- ACH BIODEF -->
+<!-- Area Chart for BIODEF -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Biodef</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areabiodef">
+                <canvas id="myAreaChartbiodef"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for BIODEF -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Biodef</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerBiodef" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_crystallure'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_crystallure'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_crystallure'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Biodef
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyBiodef">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-        <!-- ACH BIODEF -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Achievement Biodef</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-areabiodef">
-                        <canvas id="myChartBiodef"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+<script>
+    var salesData = @json($dataSales);
 
-        <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableBiodef(date) {
+        var tableBody = document.getElementById('tableBodyBiodef');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'BIODEF' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'BIODEF') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartBiodef(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartBiodef(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartbiodef').getContext('2d');
+        if (window.myChartBiodef) {
+            window.myChartBiodef.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartBiodef').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartBiodef = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1508,141 +1263,115 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerBiodef').addEventListener('change', function() {
+        updateTableBiodef(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerBiodef').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableBiodef(today);
 </script>
 
-        <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Biodef</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "BIODEF")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_biodef' => 0,
-                        'ach_biodef' => 0,
-                        'persen_biodef' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_biodef'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_biodef'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_biodef'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+            <!-- ACH WONDERLY -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Wonderly</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areawonderly">
+                <canvas id="myAreaChartwonderly"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for WONDERLY -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Wonderly</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerWonderly" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_biodef'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_biodef'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_biodef'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Wonderly
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyWonderly">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH WONDERLY -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Achievement Wonderly</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-areawonderly">
-                            <canvas id="myChartWonderly"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<script>
+    var salesData = @json($dataSales);
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableWonderly(date) {
+        var tableBody = document.getElementById('tableBodyWonderly');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'WONDERLY' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'WONDERLY') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartWonderly(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartWonderly(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartwonderly').getContext('2d');
+        if (window.myChartWonderly) {
+            window.myChartWonderly.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartWonderly').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartWonderly = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1660,141 +1389,116 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerWonderly').addEventListener('change', function() {
+        updateTableWonderly(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerWonderly').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableWonderly(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Wonderly</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "WONDERLY")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_wonderly' => 0,
-                        'ach_wonderly' => 0,
-                        'persen_wonderly' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_wonderly'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_wonderly'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_wonderly'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+                <!-- ACH LABORE -->
+<!-- Area Chart for LABORE -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Labore</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-arealabore">
+                <canvas id="myAreaChartlabore"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for LABORE -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Labore</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerLabore" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_wonderly'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_wonderly'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_wonderly'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Labore
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyLabore">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-                <!-- ACH LABORE -->
-                <div class="col-xl-8 col-lg-7">
-                    <div class="card shadow mb-4">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Achievement Labore</h6>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="chart-arealabore">
-                                <canvas id="myChartLabore"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<script>
+    var salesData = @json($dataSales);
 
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+    function updateTableLabore(date) {
+        var tableBody = document.getElementById('tableBodyLabore');
+        tableBody.innerHTML = '';
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'LABORE' && sales.updated_at.startsWith(date);
+        });
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-        // Filter only WARDAH brand
-        if (brandName === 'LABORE') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartLabore(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartLabore(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaChartlabore').getContext('2d');
+        if (window.myChartLabore) {
+            window.myChartLabore.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartLabore').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartLabore = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1812,140 +1516,116 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerLabore').addEventListener('change', function() {
+        updateTableLabore(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerLabore').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableLabore(today);
 </script>
 
-                <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Labore</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "LABORE")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_labore' => 0,
-                        'ach_labore' => 0,
-                        'persen_labore' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_labore'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_labore'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_labore'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
+            <!-- ACH TAVI -->
+<!-- Area Chart for TAVI -->
+<div class="col-xl-8 col-lg-7">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Achievement Tavi</h6>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="chart-areatavi">
+                <canvas id="myAreaCharttavi"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Master Data Table for TAVI -->
+<div class="col-xl-4 col-lg-6">
+    <div class="card shadow mb-4 custom-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Master Data Tavi</h6>
+        </div>
+        <br>
+        <div class="col-12">
+            <input type="date" id="datePickerTavi" class="form-control">
+        </div>
+        <div class="card-body custom-card-body">
+            <table style="width: 100%; height: 100%">
+                <thead>
                     <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_labore'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_labore'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_labore'] * 100, 0, ',', '.') }}%</td>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6;" data-sortable>Sales Name
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Target Tavi
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 50%;" data-sortable>Pencapaian
+                        </th>
+                        <th style="text-align: center; border-bottom: 1px solid #dee2e6; width: 20%;" data-sortable>Achievement
+                        </th>
                     </tr>
-                    @endforeach
+                </thead>
+                <tr>
+                <tbody style="border-bottom: 1px solid #dee2e6; font-size: 14px;" id="tableBodyTavi">
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-            <!-- ACH TAVI -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Achievement Tavi</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-areatavi">
-                            <canvas id="myChartTavi"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    <script>
-    // Initialize empty arrays to store data
-    var salesNames = [];
-    var targetBrand = [];
-    var achBrand = [];
+<script>
+    var salesData = @json($dataSales);
 
-    // Initialize an object to track the latest updated_at for each sales name
-    var latestUpdate = {};
+    function updateTableTavi(date) {
+        var tableBody = document.getElementById('tableBodyTavi');
+        tableBody.innerHTML = '';
 
-    // Loop through the data to update the arrays with the latest values and track the latest updated_at for each sales name
-    @foreach($dataSales as $sales)
-        var salesName = '{{ $sales["sales_name"] }}';
-        var updatedAt = '{{ $sales["updated_at"] }}';
-        var brandName = '{{ $sales["brand_name"] }}';
+        var filteredData = salesData.filter(function(sales) {
+            return sales.brand_name === 'TAVI' && sales.updated_at.startsWith(date);
+        });
 
-        // Filter only WARDAH brand
-        if (brandName === 'TAVI') {
-            // Check if the sales name is already in the array and if the current data has a newer updated_at
-            if (!latestUpdate[salesName] || updatedAt > latestUpdate[salesName]) {
-                // Update the latest updated_at for the sales name
-                latestUpdate[salesName] = updatedAt;
+        var salesNames = [];
+        var targetBrand = [];
+        var achBrand = [];
 
-                // Update the data arrays
-                var index = salesNames.indexOf(salesName);
-                if (index !== -1) {
-                    targetBrand[index] = parseInt('{{ $sales["target_brand"] }}');
-                    achBrand[index] = parseInt('{{ $sales["ach_brand"] }}');
-                } else {
-                    salesNames.push(salesName);
-                    targetBrand.push(parseInt('{{ $sales["target_brand"] }}'));
-                    achBrand.push(parseInt('{{ $sales["ach_brand"] }}'));
-                }
-            }
+        filteredData.forEach(function(sales) {
+            var row = tableBody.insertRow();
+            row.style.borderBottom = '1px solid #dee2e6';
+            row.insertCell(0).innerText = sales.sales_name;
+            row.insertCell(1).innerText = parseInt(sales.target_brand, 10).toLocaleString();
+            row.insertCell(2).innerText = parseInt(sales.ach_brand, 10).toLocaleString();
+            row.insertCell(3).innerText = (parseFloat(sales.persen_brand) * 100).toFixed(2) + '%';
+
+            // Update chart data
+            salesNames.push(sales.sales_name);
+            targetBrand.push(parseInt(sales.target_brand, 10));
+            achBrand.push(parseInt(sales.ach_brand, 10));
+        });
+
+        updateChartTavi(salesNames, targetBrand, achBrand);
+    }
+
+    function updateChartTavi(salesNames, targetBrand, achBrand) {
+        var ctx = document.getElementById('myAreaCharttavi').getContext('2d');
+        if (window.myChartTavi) {
+            window.myChartTavi.destroy();
         }
-    @endforeach
-
-    // Initialize chart for Target Brand and Achieved Brand for WARDAH
-    var ctx2 = document.getElementById('myChartTavi').getContext('2d');
-    var myChart2 = new Chart(ctx2, {
-        type: 'bar',
+        window.myChartTavi = new Chart(ctx, {
+            type: 'bar',
         data: {
             labels: salesNames,
             datasets: [{
@@ -1963,83 +1643,27 @@
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+    }
+
+    document.getElementById('datePickerTavi').addEventListener('change', function() {
+        updateTableTavi(this.value);
     });
+
+    // Set initial date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('datePickerTavi').value = today;
+
+    // Update table and chart on page load with today's data
+    updateTableTavi(today);
 </script>
 
-            <!-- Master Data Table -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card shadow mb-4 custom-card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Master Data Tavi</h6>
-                </div>
-                <div class="card-body custom-card-body">
-                    <table style="width: 100%; height: 100%">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Pencapaian
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Achievement
-                                    <span class="sortable-icon">
-                                        <i class="fas fa-sort"></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @php
-                    $salesData = [];
-                    @endphp
-                    @foreach($dataSales as $data)
-                    @if($data['brand_name'] === "TAVI")
-                    @if(!isset($salesData[$data['sales_name']]))
-                    @php
-                    $salesData[$data['sales_name']] = [
-                        'target_tavi' => 0,
-                        'ach_tavi' => 0,
-                        'persen_tavi' => 0,
-                    ];
-                    @endphp
-                    @endif
-                    @php
-                    // Update sales data with latest values
-                    $salesData[$data['sales_name']]['target_tavi'] = $data['target_brand'];
-                    $salesData[$data['sales_name']]['ach_tavi'] = $data['ach_brand'];
-                    $salesData[$data['sales_name']]['persen_tavi'] = $data['persen_brand'];
-                    @endphp
-                    @endif
-                    @endforeach
-                    @foreach($salesData as $salesName => $sales)
-                    <tr>
-                        <td style="border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesName }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['target_tavi'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['ach_tavi'], 0, ',', '.') }}</td>
-                        <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($sales['persen_tavi'] * 100, 0, ',', '.') }}%</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
     </main>
 @endsection

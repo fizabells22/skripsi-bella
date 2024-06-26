@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="icon" href="img/paragon-corp.png">
+    <link rel="icon" href="img/paragon.png">
     <title>Register Page | Dashboard Sales Performance & Racing Doors SKU</title>
 
     <!-- Fonts -->

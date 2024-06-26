@@ -10,7 +10,7 @@
     }
     </style>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-     <script>
+<script>
     $(document).ready(function(){
         // Fungsi untuk melakukan pengurutan data berdasarkan kolom yang di-klik
         $('th[data-sortable]').click(function(){
@@ -23,22 +23,47 @@
             } else {
                 $(this).find('.sortable-icon i').removeClass('fa-sort-down').addClass('fa-sort-up');
             }
-            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+            for (var i = 0; i < rows.length; i++){ table.append(rows[i]); }
         });
+
         // Fungsi untuk membandingkan nilai
         function comparer(index) {
             return function(a, b) {
-                var valA = getCellValue(a, index), valB = getCellValue(b, index);
-                // Mengubah string menjadi angka jika kolom adalah target_brand atau ach_brand
-                if(index === 1 || index === 2){
-                    valA = parseFloat(valA.replace(/\./g, '').replace(',', '.'));
-                    valB = parseFloat(valB.replace(/\./g, '').replace(',', '.'));
+                var valA = getCellValue(a, index);
+                var valB = getCellValue(b, index);
+
+                if (index === 1) { // Jika kolom adalah tanggal
+                    valA = parseDate(valA);
+                    valB = parseDate(valB);
+                    return valA - valB;
+                } else {
+                    valA = parseFloatOrString(valA);
+                    valB = parseFloatOrString(valB);
+                    if ($.isNumeric(valA) && $.isNumeric(valB)) {
+                        return valA - valB;
+                    } else {
+                        return valA.toString().localeCompare(valB);
+                    }
                 }
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB);
             };
         }
+
         // Fungsi untuk mendapatkan nilai sel
-        function getCellValue(row, index){ return $(row).children('td').eq(index).text(); }
+        function getCellValue(row, index) { 
+            return $(row).children('td').eq(index).text(); 
+        }
+
+        // Fungsi untuk mengubah string 'd-m-Y' menjadi objek Date
+        function parseDate(dateStr) {
+            var parts = dateStr.split('-');
+            return new Date(parts[2], parts[1] - 1, parts[0]); // Year, Month (0-based), Day
+        }
+
+        // Fungsi untuk mengubah string menjadi angka jika memungkinkan
+        function parseFloatOrString(value) {
+            var num = parseFloat(value.replace(/\./g, '').replace(',', '.'));
+            return isNaN(num) ? value : num;
+        }
     });
 </script>
                     <h2 class="m-0 font-weight-bold text-primary">Master Data</h2>
@@ -62,10 +87,7 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer ID
-                                                <span class="sortable-icon">
-                                                <i class="fas fa-sort"></i>
-                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Customer ID</th>
                                                 <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
@@ -138,10 +160,7 @@
                                             <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6; padding: 10px;"data-sortable>Brand Name
-                                            <span class="sortable-icon">
-                                                <i class="fas fa-sort"></i>
-                                                </span></th>
+                                            <th style="text-align: center; border-bottom: 1px solid #dee2e6;">Brand Name</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -179,7 +198,7 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -191,7 +210,7 @@
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $productss->product_id }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $productss->product_name }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $productss->product_status_lifecycles }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $productss->brand_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $productss->brand->brand_name}}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -213,6 +232,9 @@
                                                 <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Report ID
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
+                                                </span></th>                            <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Report Date 
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
                                                 </span></th>
                                                 <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Bulan Report
                                                 <span class="sortable-icon">
@@ -222,19 +244,19 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Product Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Customer Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -243,13 +265,13 @@
                                         <tbody>
                                             @foreach($reports as $reportss)
                                             <tr>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->reports_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->reports_id }}</td>                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ \Carbon\Carbon::parse($reportss->created_at)->format('d-m-Y') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->bulan_report }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($reportss->delivered_nominal_bruto_incppns, 0, ',', '.') }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->product_id }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->sales_id }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->customers_kd }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->brand_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->product->product_name }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->salesRepresentative->saless_name }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->customer->customers_name }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $reportss->brand->brand_name }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -272,6 +294,10 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Report Date
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
                                                 <th style="text-align: center;border-bottom: 1px solid #dee2e6;"data-sortable>Target Brand (Rp)
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
@@ -284,11 +310,11 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Brand Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -298,11 +324,12 @@
                                             @foreach($salesAchievements as $salesAchievementss)
                                             <tr>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->achievement_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ \Carbon\Carbon::parse($salesAchievementss->created_at)->format('d-m-Y') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->target_brand, 0, ',', '.') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->ach_brand, 0, ',', '.') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesAchievementss->persen_brand * 100, 0, ',', '.') }}%</td>  
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->sales_id }}</td>
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->brand_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->salesRepresentative->saless_name }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesAchievementss->brand->brand_name }}</td>
                                            </tr>
                                             @endforeach
                                         </tbody>
@@ -322,6 +349,10 @@
                                         <thead>
                                             <tr>
                                                 <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Scoreboard ID
+                                                <span class="sortable-icon">
+                                                <i class="fas fa-sort"></i>
+                                                </span></th>
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Report Date
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
@@ -373,7 +404,7 @@
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>
-                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales ID
+                                                <th style="text-align: center; border-bottom: 1px solid #dee2e6;"data-sortable>Sales Name
                                                 <span class="sortable-icon">
                                                 <i class="fas fa-sort"></i>
                                                 </span></th>    
@@ -384,6 +415,7 @@
                                             @foreach($salesScoreboards as $salesScoreboardss)
                                             <tr>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->scoreboard_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ \Carbon\Carbon::parse($salesScoreboardss->created_at)->format('d-m-Y') }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->persen_absensis * 100, 0, ',', '.') }}%</td>                                           <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->target_coverages }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->actual_coverages }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->act_tar_coverages_persen * 100, 0, ',', '.') }}%</td>  
@@ -395,7 +427,7 @@
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->target_ecalls }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->actual_ecalls }}</td>
                                                 <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ number_format($salesScoreboardss->act_plan_ecalls_persen * 100, 0, ',', '.') }}%</td>  
-                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->sales_id }}</td>
+                                                <td style="text-align: center; border-bottom: 1px solid #dee2e6; font-size: 14px;">{{ $salesScoreboardss->salesRepresentative->saless_name }}</td>
                                            </tr>
                                             @endforeach
                                         </tbody>

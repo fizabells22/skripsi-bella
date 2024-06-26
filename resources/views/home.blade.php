@@ -2,6 +2,7 @@
 @section('title', 'Welcome! | Dashboard Sales Performance & Racing Doors SKU')
 
 @section('content')
+<link rel="icon" href="img/paragon.png">
 <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">

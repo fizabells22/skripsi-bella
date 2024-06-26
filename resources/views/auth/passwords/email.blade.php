@@ -9,15 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/project-style.css">
-    <link rel="icon" href="img/paragon-corp.png">
+    <link rel="icon" href="img/paragon.png">
+    <link href="{{asset('admin_assets/vendor/paragon.png')}}" rel="icon">
     <title>Forgot Password Page | Dashboard Sales Performance & Racing Doors SKU</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet'>
 
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
 <div class="login">

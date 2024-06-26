@@ -9,13 +9,14 @@ class Brands extends Model
 {
     use HasFactory;
     protected $table = 'brands';
+    protected $primaryKey = 'brand_id';
 
     public function products() {
-        return $this->hasMany(Products::class);
+        return $this->hasMany(Products::class, 'brand_id', 'brand_id');
     }
 
     public function salesAchievements()
     {
-        return $this->hasMany(SalesAchievements::class, 'brand_id');
+        return $this->hasMany(SalesAchievements::class, 'brand_id', 'brand_id');
     }
 }

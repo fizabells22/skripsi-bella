@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Welcome | Dashboard Sales Performace & Racing Doors SKU</title>
-
+        <link rel="icon" href="img/paragon.png">
         <!-- Fonts -->
         <link href=<link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         

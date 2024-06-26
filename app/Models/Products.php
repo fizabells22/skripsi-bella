@@ -10,7 +10,7 @@ class Products extends Model
     use HasFactory;
     protected $table = 'products';
     
-    public function brands() {
+    public function brand() {
         return $this->belongsTo(Brands::class, 'brand_id');
     }
 
